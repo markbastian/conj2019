@@ -13,6 +13,7 @@
                  [metosin/ring-http-response "0.9.1"]
                  [ring/ring-defaults "0.3.2"]
                  [nrepl "0.6.0"]
-                 [nrepl/drawbridge "0.2.0"]
-                 [metosin/reitit "0.3.9"]]
+                 [nrepl/drawbridge "0.2.1"]
+                 [metosin/reitit "0.3.9"]
+                 [datascript "0.18.6"]]
   :repl-options {:init-ns conj2019.core})
