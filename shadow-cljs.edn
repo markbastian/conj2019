@@ -12,7 +12,7 @@
 
   :builds {:app {:target :browser
                  :output-dir "src/main/resources/public"
-                 :asset-path "."
+                 :asset-path "/public"
                  :modules {:main {:init-fn conj2019.app/init}}
                  :devtools {:http-root "public"
                             :http-port 8080}}}}
