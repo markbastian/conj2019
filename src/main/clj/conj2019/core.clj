@@ -80,6 +80,7 @@
        ["/" {:handler hello-world-handler}]
        ["/index" index-handler]
        eliza/routes
+       ["/public/*" (ring/create-resource-handler)]
        ["/time" {:handler (fn [request] (ok (str "The time is: " (Date.))))}]
        ["/stats" {:handler stats-handler}]
        ["/dump" {:handler (fn [request] (ok (with-out-str (pp/pprint request))))}]
@@ -87,12 +88,10 @@
          ["/repl" {:handler nrepl-handler}])]
       {:data {:middleware [[wrap-defaults
                             (-> site-defaults
-                                (assoc :static {:file "public" :files "public"})
+                                ;(assoc :static {:file "public" :files "public"})
                                 (update :security dissoc :content-type-options)
                                 (update :responses dissoc :content-types))]
-                           wrap-json-response
-                           ;[wrap-file "./public"]
-                           #_[wrap-content-type "text/html"]]}})
+                           wrap-json-response]}})
     (constantly (not-found "Not found"))))
 
 (def config {::web/server {:port    3000

@@ -16,3 +16,5 @@ pom.xml.asc
 node_modules/
 package-lock.json
 cljs-runtime/
+main.js
+manifest.edn

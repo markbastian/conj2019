@@ -11,7 +11,7 @@
   :nrepl {:port 7888}
 
   :builds {:app {:target :browser
-                 :output-dir "public"
+                 :output-dir "src/main/resources/public"
                  :asset-path "."
                  :modules {:main {:init-fn conj2019.app/init}}
                  :devtools {:http-root "public"
