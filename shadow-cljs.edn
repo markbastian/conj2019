@@ -1,0 +1,18 @@
+;; shadow-cljs configuration
+{:source-paths ["src/main/cljs" "src/main/cljc"]
+
+  :dependencies
+    [[org.clojure/clojurescript "1.10.520"]
+     [reagent "0.8.1"]
+     [com.andrewmcveigh/cljs-time "0.5.2"]
+     [haslett "0.1.6"]
+     [cljs-ajax "0.8.0"]]
+
+  :nrepl {:port 7888}
+
+  :builds {:app {:target :browser
+                 :output-dir "public"
+                 :asset-path "."
+                 :modules {:main {:init-fn conj2019.app/init}}
+                 :devtools {:http-root "public"
+                            :http-port 8080}}}}

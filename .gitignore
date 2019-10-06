@@ -12,3 +12,7 @@ pom.xml.asc
 .hg/
 *.iml
 .idea/
+.shadow-cljs/
+node_modules/
+package-lock.json
+cljs-runtime/
