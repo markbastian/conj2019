@@ -29,6 +29,8 @@
                         :source-paths ["src/main/cljs" "src/main/cljc"]}]}
 
   :profiles {:cljs {:dependencies [[org.clojure/clojurescript "1.10.520"]
-                                   [reagent "0.8.1"]]}}
+                                   [reagent "0.8.1"]
+                                   [haslett "0.1.6"]
+                                   [cljs-ajax "0.8.0"]]}}
 
   :repl-options {:init-ns conj2019.core})

@@ -11,9 +11,7 @@
             [ring.middleware.defaults :refer [wrap-defaults api-defaults site-defaults]]
             [drawbridge.core]
             [conj2019.eliza-app :as eliza]
-    ;For ws
-            [immutant.web.async :as async]
-            )
+            [immutant.web.async :as async])
   (:import (java.util Date)))
 
 (defonce channels (atom #{}))
@@ -30,18 +28,21 @@
   (doseq [channel @channels]
     (async/send! channel msg)))
 
-(def websocket-callbacks
-  "WebSocket callback functions"
-  {:on-open    connect!
-   :on-close   disconnect!
-   :on-message notify-clients!})
-
 (defn ws-handler [request]
-  (pp/pprint request)
-  (async/as-channel request websocket-callbacks))
+  ;(pp/pprint request)
+  ;(pp/pprint (keys request))
+  ; :session/key "5230ecf9-3584-4b83-9e42-6c46b42c1537",
+  (pp/pprint (get-in request [:headers "sec-websocket-key"]))
+  ;Session key appears to exist after the first connection.
+  (pp/pprint (get-in request [:session/key]))
+  ;Or use a query param or something
+  (when-not (:session/key request)
+    (async/as-channel request {:on-open    connect!
+                               :on-close   disconnect!
+                               :on-message notify-clients!})))
 
 (def websocket-routes
-  [["/ws" ws-handler]])
+  ["/ws" ws-handler])
 
 ;(def app (constantly {:status 200 :body "OK"}))
 
