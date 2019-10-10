@@ -1,9 +1,24 @@
 (ns conj2019.api.ws
   (:require [immutant.web.async :as async]
             [clojure.pprint :as pp]
-            [cheshire.core :as ch]))
+            [cognitect.transit :as transit]
+            [conj2019.eliza :as eliza]
+            [cheshire.core :as ch])
+  (:import (java.io ByteArrayInputStream)))
 
 (defonce channels (atom #{}))
+
+(defn notify-clients! [msg]
+  (doseq [channel @channels]
+    (async/send! channel msg)))
+
+(defmulti handle :fn)
+
+(defmethod handle :eliza [{:keys [message]}]
+  (notify-clients!
+    (ch/encode
+      {:fn      :eliza
+       :message (eliza/respond message)})))
 
 (defn connect! [channel]
   (prn "channel open")
@@ -14,11 +29,12 @@
   (swap! channels #(remove #{channel} %)))
 
 (defn handle-message [channel msg]
-  (prn (keys msg)))
-
-(defn notify-clients! [msg]
-  (doseq [channel @channels]
-    (async/send! channel msg)))
+  (-> msg
+      (.getBytes "UTF-8")
+      (ByteArrayInputStream.)
+      (transit/reader :json)
+      transit/read
+      handle))
 
 (defn ws-handler [request]
   ; :session/key "5230ecf9-3584-4b83-9e42-6c46b42c1537",
