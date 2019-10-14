@@ -37,10 +37,11 @@
       handle))
 
 (defn ws-handler [request]
+  (pp/pprint request)
   ; :session/key "5230ecf9-3584-4b83-9e42-6c46b42c1537",
-  (pp/pprint (get-in request [:headers "sec-websocket-key"]))
+  ;(pp/pprint (get-in request [:headers "sec-websocket-key"]))
   ;Session key appears to exist after the first connection.
-  (pp/pprint (get-in request [:session/key]))
+  ;(pp/pprint (get-in request [:session/key]))
   ;Or use a query param or something
   (when-not (:session/key request)
     (async/as-channel request {:on-open    #'connect!

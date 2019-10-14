@@ -32,7 +32,7 @@
 (defn connect-ws [state]
   (let [s (r/cursor state [:stream])]
     (when-not @s
-      (let [url (str "ws://" (.-host (.-location js/window)) "/ws")]
+      (let [url (str "ws://" (.-host (.-location js/window)) "/ws?user=Mark")]
         (go-loop
           [stream (<! (ws/connect url {:format hfmt/transit}))]
           (reset! s stream)

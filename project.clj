@@ -17,7 +17,11 @@
                  [nrepl/drawbridge "0.2.1"]
                  [metosin/reitit "0.3.9"]
                  [datascript "0.18.6"]
-                 [cheshire "5.9.0"]]
+                 [cheshire "5.9.0"]
+                 ;For spring
+                 [org.springframework.boot/spring-boot-starter-web "2.1.9.RELEASE"]
+
+                 ]
 
   :plugins [[lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]]
 
@@ -30,7 +34,7 @@
                         :source-paths ["src/main/cljs" "src/main/cljc"]}]}
 
   :profiles {:cljs {:dependencies [[org.clojure/clojurescript "1.10.520"]
-                                   [reagent "0.8.1"]
+                                   [reagent "0.9.0-rc1"]
                                    [haslett "0.1.6"]
                                    [cljs-ajax "0.8.0"]]}}
 

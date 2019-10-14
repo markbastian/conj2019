@@ -2,9 +2,12 @@
 
 A Clojure library designed to ... well, that part is up to you.
 
-## Usage
+## Links
 
-FIXME
+* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/) using Spring.
+* [The State of Java in 2019](https://www.baeldung.com/java-in-2019)
+  * Spring 5 > 50%
+  * Spring Boot > 60%
 
 ## License
 
