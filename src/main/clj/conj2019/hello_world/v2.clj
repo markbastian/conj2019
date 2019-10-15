@@ -1,25 +1,35 @@
-(ns conj2019.hello-world.v1
-  "Introduce middleware pattern."
+(ns conj2019.hello-world.v2
+  "Introduce output functions."
   (:require [immutant.web :as immutant]
-    ;This is baked in, no need to roll out own
-            [ring.middleware.json :refer [wrap-json-response]]
+            [cheshire.core :as ch]
             [ring.middleware.params :refer [wrap-params]]
-    ;[ring.middleware.content-type :refer [wrap-content-type]]
-    ;More data manipulation functions
             [ring.util.http-response :refer [ok not-found]]))
 
 (defonce state (atom 0))
 
-;(ok {:test :map})
+(defn wrap-json [handler]
+  (fn [request]
+    (update (handler request) :body ch/encode)))
+
+;(def app
+;  (ring/ring-handler
+;    (ring/router
+;      [["/greeting" greeting-handler]]
+;      {:data {:middleware [[wrap-defaults api-defaults]
+;                           wrap-json-response]}})))
 
 (def app
   (-> (fn [{:keys [params path-info] :as request}]
         (let [{:strs [name] :or {name "World"}} params]
           (case path-info
-            "/greeting" (ok {:id (swap! state inc) :content (format "Hello, %s!" name)})
-            "/reset" (ok {:id (reset! state 0)})
-            (not-found (format "Unknown route: %s" path-info)))))
-      wrap-json-response
+            "/greeting" {:response 200
+                         :body     {:id      (swap! state inc)
+                                    :content (format "Hello, %s!" name)}}
+            "/reset" {:response 200
+                      :body     {:id (reset! state 0)}}
+            {:response 404
+             :body     (format "Unknown route: %s" path-info)})))
+      wrap-json
       wrap-params))
 
 (comment

@@ -13,15 +13,18 @@
                  [metosin/ring-http-response "0.9.1"]
                  [ring/ring-defaults "0.3.2"]
                  [ring/ring-json "0.5.0"]
+                 [ring/ring-mock "0.4.0"]
                  [nrepl "0.6.0"]
                  [nrepl/drawbridge "0.2.1"]
-                 [metosin/reitit "0.3.9"]
+                 [metosin/reitit "0.3.10"]
                  [datascript "0.18.6"]
                  [cheshire "5.9.0"]
                  ;For spring
                  [org.springframework.boot/spring-boot-starter-web "2.1.9.RELEASE"]
 
                  ]
+
+  :main conj2019.core
 
   :plugins [[lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]]
 
@@ -36,6 +39,7 @@
   :profiles {:cljs {:dependencies [[org.clojure/clojurescript "1.10.520"]
                                    [reagent "0.9.0-rc1"]
                                    [haslett "0.1.6"]
-                                   [cljs-ajax "0.8.0"]]}}
+                                   [cljs-ajax "0.8.0"]]}
+             :uberjar {:aot :all}}
 
   :repl-options {:init-ns conj2019.core})

@@ -25,24 +25,3 @@
 (comment
   (def server (immutant/run #'app {:port 3000 :host "0.0.0.0"}))
   (immutant/stop server))
-
-;(defn greeting-handler [{:keys [params] :as request}]
-;  (let [{:keys [name] :or {name "World"}} params]
-;    (ok {:id (swap! state inc)
-;         :content (format "Hello, %s!" name)})))
-
-;(def app
-;  (ring/ring-handler
-;    (ring/router
-;      [["/greeting" greeting-handler]]
-;      {:data {:middleware [[wrap-defaults api-defaults]
-;                           wrap-json-response]}})))
-
-;[partsbin.core :as partsbin]
-;[partsbin.immutant.web.core :as web]
-
-;(def config {::web/server {:port    3000
-;                           :host    "0.0.0.0"
-;                           :handler #'app}})
-
-;(defonce sys (partsbin/create config))

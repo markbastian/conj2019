@@ -1,5 +1,7 @@
 (ns conj2019.core
-  (:require [partsbin.core :as partsbin]
+  (:gen-class)
+  (:require [environ.core :refer [env]]
+            [partsbin.core :as partsbin]
             [partsbin.immutant.web.core :as web]
             [conj2019.api.v0 :as v0]
             [clojure.pprint :as pp]
@@ -12,7 +14,9 @@
             [ring.middleware.defaults :refer [wrap-defaults api-defaults site-defaults]]
             [drawbridge.core]
             [conj2019.eliza-app :as eliza]
-            [conj2019.api.ws :as ws]))
+            [conj2019.api.ws :as ws]
+            [taoensso.timbre :as timbre]
+            [nrepl.server :refer [start-server stop-server]]))
 
 (defn hello-world-handler [request]
   (ok
@@ -59,4 +63,21 @@
 
 (defonce sys (partsbin/create config))
 
+(defn -main [& args]
+  (let [nrepl-port (some->> :nrepl-port env (re-matches #"\d+") Long/parseLong)
+        nrepl-host (env :nrepl-host "0.0.0.0")
+        server (when nrepl-port (start-server :bind nrepl-host :port nrepl-port))
+        system (partsbin/start sys)]
+    (timbre/info "System started!!!")
+    (when server (timbre/info (str "nrepl port started on port " nrepl-port ".")))
+    (try
+      (.addShutdownHook
+        (Runtime/getRuntime)
+        (let [^Runnable shutdown #(do (partsbin/stop sys) (when server (stop-server server)))]
+          (Thread. shutdown)))
+      (catch Throwable t
+        (timbre/warn t)
+        (do
+          (partsbin/stop sys)
+          (when server (stop-server server)))))))
 
