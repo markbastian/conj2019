@@ -10,8 +10,6 @@ package:
   exclude:
     - requirements.txt
     - serverless.yml
-    - README.md
-    - LICENSE.txt
 
 # Maybe remove cors/other security here since this is just an example
 functions:

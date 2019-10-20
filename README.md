@@ -9,6 +9,15 @@ A Clojure library designed to ... well, that part is up to you.
   * Spring 5 > 50%
   * Spring Boot > 60%
 
+
+## Data
+sls deploy -v
+1. Non-stripped down project (upload mid 40MB) 3:13
+1. Stripped down 1:15, 1:45
+
+sls deploy function -f EchoHandler
+1. 0:33
+
 ## License
 
 Copyright © 2019 FIXME
