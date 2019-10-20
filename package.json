@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "devDependencies": {
+    "serverless-python-requirements": "^5.0.0",
     "serverless-s3-sync": "^1.8.0",
     "serverless-scriptable-plugin": "^1.0.1",
     "shadow-cljs": "2.7.3"
@@ -14,6 +15,6 @@
     "create-react-class": "^15.6.3",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
-    "serverless": "^1.44.1"
+    "serverless": "^1.54.0"
   }
 }

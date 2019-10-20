@@ -1,0 +1,28 @@
+service: simple-lambda
+
+provider:
+  name: aws
+  runtime: python3.7
+
+package:
+  include:
+    - pyconj/**
+  exclude:
+    - requirements.txt
+    - serverless.yml
+    - README.md
+    - LICENSE.txt
+
+# Maybe remove cors/other security here since this is just an example
+functions:
+  EchoHandler:
+    handler: pyconj.handlers.echo
+    events:
+      - http:
+          path: echo
+          method: get
+          cors: true
+
+# sls plugin install -n serverless-python-requirements
+plugins:
+  - serverless-python-requirements

@@ -13,6 +13,7 @@ pom.xml.asc
 *.iml
 .idea/
 .shadow-cljs/
+.serverless/
 node_modules/
 package-lock.json
 cljs-runtime/
