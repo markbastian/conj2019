@@ -1,4 +1,4 @@
-(ns conj2019.fibonacci)
+(ns conj2019.misc.fibonacci)
 
 (defn nth-fib [n]
   (loop [i 0 j 1 step 0]

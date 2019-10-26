@@ -4,7 +4,7 @@
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
             :url  "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.10.1"]
-                 [markbastian/partsbin "0.1.1-SNAPSHOT"]
+                 [markbastian/partsbin "0.1.3-SNAPSHOT"]
                  [com.taoensso/timbre "4.10.0"]
                  [environ "1.1.0"]
                  [hiccup "1.0.5"]
@@ -19,9 +19,11 @@
                  [metosin/reitit "0.3.10"]
                  [datascript "0.18.6"]
                  [cheshire "5.9.0"]
+                 [clj.qrgen "0.4.0"]
+                 ;Mazes!
+                 [mazegen "0.1.0-SNAPSHOT"]
                  ;For spring
                  [org.springframework.boot/spring-boot-starter-web "2.1.9.RELEASE"]
-
                  ]
 
   :main conj2019.core
@@ -42,4 +44,4 @@
                                    [cljs-ajax "0.8.0"]]}
              :uberjar {:aot :all}}
 
-  :repl-options {:init-ns conj2019.core})
+  :repl-options {:init-ns conj2019.system})

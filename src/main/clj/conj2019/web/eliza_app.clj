@@ -1,4 +1,4 @@
-(ns conj2019.eliza-app
+(ns conj2019.web.eliza-app
   (:require [conj2019.eliza :as eliza]
             [hiccup.page :refer [html5]]
             [ring.util.http-response :refer [ok not-found]]))
@@ -7,7 +7,7 @@
   (ok
     (html5
       [:h1 "Welcome to Eliza."]
-      [:form {:action "/eliza" :method :post}
+      [:form {:autocomplete "off" :action "/eliza" :method :post}
        (if prompt (eliza/respond prompt) "Why are you here?") [:br]
        [:input {:type "text" :name "prompt" :value "" :style "width:100%"}]])))
 
