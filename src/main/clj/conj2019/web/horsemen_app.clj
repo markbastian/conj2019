@@ -58,9 +58,12 @@
      (render-marker location cell-dim :green emojis/smiley)]))
 
 (defn step-handler [dir {:keys [session] :as request}]
-  (let [{:keys [inventory defeated] :as session} (rules/move session dir)]
+  (let [{:keys [inventory defeated end-condition] :as session} (rules/move session dir)]
     (-> (ok (html5
               (maze-svg session)
+              (when end-condition
+                [:a {:href "/horsemen"}
+                 [:h1 end-condition]])
               [:ul
                (for [[k {:keys [emoji color] :as item}] inventory]
                  [:li (format "%s: A %s %s" emoji (name color) (name k))])]
@@ -76,10 +79,9 @@
       :left (step-handler :left request)
       :up (step-handler :up request)
       :down (step-handler :down request)
-      (let [game (rules/new-game)
-            session (into session game)]
+      (let [game (rules/new-game)]
         (-> (ok (html5 (maze-svg game)))
-            (assoc :session session))))
+            (assoc :session game))))
     (let [game (rules/new-game)
           session (into session game)]
       (-> (ok (html5 (maze-svg game)))

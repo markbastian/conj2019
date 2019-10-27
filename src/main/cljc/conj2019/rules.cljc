@@ -50,15 +50,32 @@
       (update :inventory assoc name item)
       (update :elements dissoc location)))
 
-(defmethod interact :enemy [{:keys [location inventory] :as game-state} {:keys [weapon] :as enemy}]
-  (if (get inventory weapon)
-    (-> game-state
-        (update :defeated conj enemy)
-        (update :elements dissoc location))
-    (new-game)))
+(defn won? [{:keys [elements]}]
+  (empty? (filter (fn [[_ {:keys [type]}]] (= type :enemy)) elements)))
 
-(defn move [{:keys [elements] :as game-state} dir]
-  (let [loc (maybe-move game-state dir)
-        element (elements loc)
-        new-game-state (assoc game-state :location loc)]
-    (cond-> new-game-state element (interact element))))
+(defmethod interact :enemy [{:keys [location inventory elements] :as game-state}
+                            {:keys [weapon] :as enemy}]
+  (if (get inventory weapon)
+    (let [post-defeat (-> game-state
+                          (update :defeated conj enemy)
+                          (update :elements dissoc location))]
+      (cond-> post-defeat (won? post-defeat) (assoc :end-condition "You Won!")))
+    (assoc game-state :end-condition (format "Defeated by %s" (-> enemy :name name)))))
+
+(defmethod interact :default [game-state _]
+  game-state)
+
+(defn move [{:keys [elements end-condition] :as game-state} dir]
+  (if-not end-condition
+    (let [new-game-state (assoc game-state :location (maybe-move game-state dir))]
+      (interact new-game-state (elements (:location new-game-state))))
+    game-state))
+
+(comment
+  (letfn [(insteract [g [l i]] (interact (assoc g :location l) i))]
+    (let [{:keys [elements] :as game-state} (new-game)
+          items (filter (fn [[_ {:keys [type]}]] (= type :item)) elements)
+          enemies (filter (fn [[_ {:keys [type]}]] (= type :enemy)) elements)
+          all-items-state (reduce insteract game-state items)
+          all-wins-state (reduce insteract all-items-state enemies)]
+      all-wins-state)))
