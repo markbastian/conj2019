@@ -28,7 +28,11 @@
 
   :main conj2019.core
 
-  :plugins [[lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]]
+  :plugins [[lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]
+            [lein-uberwar "0.2.1"]
+            [lein-beanstalk "0.2.7"]
+            [juxt/lein-dockerstalk "0.1.0"]
+            [lein-zip "0.1.1"]]
 
   :source-paths ["src/main/clj" "src/main/cljc"]
   :test-paths ["src/test/clj" "src/test/cljc"]
@@ -38,10 +42,44 @@
   :cljsbuild {:builds [{:id           "dev"
                         :source-paths ["src/main/cljs" "src/main/cljc"]}]}
 
-  :profiles {:cljs {:dependencies [[org.clojure/clojurescript "1.10.520"]
-                                   [reagent "0.9.0-rc1"]
-                                   [haslett "0.1.6"]
-                                   [cljs-ajax "0.8.0"]]}
-             :uberjar {:aot :all}}
+  :profiles {:cljs       {:dependencies [[org.clojure/clojurescript "1.10.520"]
+                                         [reagent "0.9.0-rc1"]
+                                         [haslett "0.1.6"]
+                                         [cljs-ajax "0.8.0"]]}
+             :uberjar    {:aot :all}
+             :ebs-tomcat {:uberwar      {:handler clj-cloud-playground.core/app}
+                          :ring         {:handler clj-cloud-playground.core/app}
+                          :aws          {:beanstalk
+                                         {:region       "us-east-1"
+                                          :stack-name   "64bit Amazon Linux 2018.03 v3.3.0 running Tomcat 8.5 Java 8"
+                                          :s3-bucket    "conj2019"
+                                          :environments [{:name    "development"
+                                                          :options {"aws:autoscaling:asg"
+                                                                    {"MinSize" "1" "MaxSize" "1"}
+                                                                    "aws:autoscaling:launchconfiguration"
+                                                                    {"InstanceType" "t2.micro"}}}]}}
+                          :dependencies [[commons-fileupload/commons-fileupload "1.4"]
+                                         [javax.xml.bind/jaxb-api "2.4.0-b180830.0359"]]}
+             :ebs-docker {:zip ["Dockerfile" "target/conj2019-0.1.0-SNAPSHOT-standalone.jar"]
+                          ;["Dockerfile" "target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar" ".ebextensions"]
+                          :aws {:beanstalk
+                                {:region       "us-east-1"
+                                 :stack-name   "64bit Amazon Linux 2018.03 v2.13.0 running Docker 18.06.1-ce"
+                                 :s3-bucket    "conj2019"
+                                 :environments [{:name    "development"
+                                                 :options {"aws:autoscaling:asg"
+                                                           {"MinSize" "1" "MaxSize" "1"}
+                                                           "aws:autoscaling:launchconfiguration"
+                                                           {"InstanceType" "t2.micro"}}}]}}}}
 
-  :repl-options {:init-ns conj2019.system})
+  :repl-options {:init-ns conj2019.system}
+
+  :aliases {"deploy-ebs-tomcat" ["do"
+                                 ["clean"]
+                                 ["with-profile" "+ebs-tomcat" "uberwar"]
+                                 ["with-profile" "+ebs-tomcat" "beanstalk" "deploy" "development"]]
+            "deploy-ebs-docker" ["do"
+                                 ["clean"]
+                                 ["uberjar"]
+                                 ["with-profile" "+ebs-docker" "zip"]
+                                 ["with-profile" "+ebs-docker" "dockerstalk" "deploy" "development" "target/conj2019-0.1.0-SNAPSHOT.zip"]]})
