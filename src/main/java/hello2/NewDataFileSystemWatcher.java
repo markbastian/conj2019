@@ -6,6 +6,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.*;
 
@@ -13,24 +14,11 @@ import java.nio.file.*;
 public class NewDataFileSystemWatcher {
     private final Path filePath = Paths.get("example/");
 
-    @Bean
-    public TaskExecutor getTaskExecutor() {
-        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-        threadPoolTaskExecutor.setCorePoolSize(1);
-        threadPoolTaskExecutor.setMaxPoolSize(5);
-        return threadPoolTaskExecutor;
-    }
-
-    @Bean
-    public WatchService getWatchService() throws IOException {
-        return FileSystems.getDefault().newWatchService();
-    }
-
     @Autowired
     private TaskExecutor taskExecutor;
 
-    @Autowired
-    private WatchService watchService;
+    //@Autowired
+    private WatchService watchService = FileSystems.getDefault().newWatchService();
 
     private void watch() {
         while (true) {
@@ -57,6 +45,10 @@ public class NewDataFileSystemWatcher {
     }
 
     public NewDataFileSystemWatcher() throws IOException {
+    }
+
+    @PostConstruct
+    public void init() throws IOException {
         filePath.register(watchService,
                 StandardWatchEventKinds.ENTRY_CREATE,
                 StandardWatchEventKinds.ENTRY_DELETE,
