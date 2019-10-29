@@ -1,15 +1,39 @@
 package hello2;
 
 import javax.persistence.Entity;
-import java.sql.Date;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import java.util.Date;
 
-//@Entity
+@Entity
 public class FileEntry {
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    private Long id;
     private String fileName;
     private Date insertionDate;
+
+    //Needed to prevent exceptions
+    protected FileEntry() {}
 
     public FileEntry(String filename, Date insertionDate){
         this.fileName = filename;
         this.insertionDate = insertionDate;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public Date getInsertionDate() {
+        return insertionDate;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "FileEntry[id=%d, firstName='%s', lastName='%s']",
+                id, fileName, insertionDate);
     }
 }

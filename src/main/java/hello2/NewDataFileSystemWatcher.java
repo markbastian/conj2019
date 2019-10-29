@@ -2,7 +2,6 @@ package hello2;
 
 import com.squareup.tape.QueueFile;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +9,7 @@ import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.Date;
 
 @Component
 public class NewDataFileSystemWatcher {
@@ -23,6 +23,9 @@ public class NewDataFileSystemWatcher {
 
     @Autowired
     private QueueFile queue;
+
+    @Autowired
+    FileEntryRepository repository;
 
     private void watch() {
         while (true) {
@@ -58,6 +61,9 @@ public class NewDataFileSystemWatcher {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                FileEntry fileEntry = new FileEntry(path.getFileName().toString(), new Date());
+                repository.save(fileEntry);
             }
             key.reset();
         }
