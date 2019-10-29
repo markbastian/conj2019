@@ -17,8 +17,8 @@ public class NewDataFileSystemWatcher {
     @Autowired
     private TaskExecutor taskExecutor;
 
-    //@Autowired
-    private WatchService watchService = FileSystems.getDefault().newWatchService();
+    @Autowired
+    private WatchService watchService;
 
     private void watch() {
         while (true) {
@@ -44,7 +44,7 @@ public class NewDataFileSystemWatcher {
         }
     }
 
-    public NewDataFileSystemWatcher() throws IOException {
+    public NewDataFileSystemWatcher() {
     }
 
     @PostConstruct
