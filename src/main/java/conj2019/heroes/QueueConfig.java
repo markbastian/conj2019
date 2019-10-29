@@ -1,4 +1,4 @@
-package hello2;
+package conj2019.heroes;
 
 import com.squareup.tape.QueueFile;
 import org.springframework.context.annotation.Bean;

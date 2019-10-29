@@ -1,4 +1,4 @@
-package hello2;
+package conj2019.heroes;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

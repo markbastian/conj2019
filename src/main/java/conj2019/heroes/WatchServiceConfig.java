@@ -1,4 +1,4 @@
-package hello2;
+package conj2019.heroes;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package hello2;
+package conj2019.heroes;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,35 +12,35 @@ public class SuperPerson {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-    private String firstName;
-    private String lastName;
+    private String name;
+    private String universe;
     private String[] powers;
 
     protected SuperPerson() {}
 
-    public SuperPerson(String firstName, String lastName, String[] powers) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public SuperPerson(String name, String universe, String[] powers) {
+        this.name = name;
+        this.universe = universe;
         this.powers = powers;
     }
 
     @Override
     public String toString() {
         return String.format(
-                "Customer[id=%d, firstName='%s', lastName='%s', powers='%s']",
-                id, firstName, lastName, Arrays.toString(powers));
+                "SuperPerson[id=%d, name='%s', universe='%s', powers='%s']",
+                id, name, universe, Arrays.toString(powers));
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getUniverse() {
+        return universe;
     }
 
     public String[] getPowers() {

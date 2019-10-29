@@ -1,4 +1,4 @@
-package hello2;
+package conj2019.heroes;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -32,7 +32,7 @@ public class FileEntry {
     @Override
     public String toString() {
         return String.format(
-                "FileEntry[id=%d, firstName='%s', lastName='%s']",
+                "FileEntry[id=%d, fileName='%s', insertionDate='%s']",
                 id, fileName, insertionDate);
     }
 }

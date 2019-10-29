@@ -1,4 +1,4 @@
-package hello2;
+package conj2019.heroes;
 
 import com.squareup.tape.QueueFile;
 import org.slf4j.Logger;
@@ -34,13 +34,13 @@ public class ScheduledTasks {
             for(int i = 0; i < frags.length; i++){
                 frags[i] = frags[i].trim();
             }
-            String first = frags[0];
-            String last = frags[1];
+            String name = frags[0];
+            String universe = frags[1];
             String[] powers = Arrays.copyOfRange(frags, 2, frags.length);
-            SuperPerson superPerson = new SuperPerson(first, last, powers);
-            log.info("Persisting customer : {}.", superPerson);
+            SuperPerson superPerson = new SuperPerson(name, universe, powers);
+            log.info("Persisting super : {}.", superPerson);
             repository.save(superPerson);
-            log.info("Customer persisted!");
+            log.info("Super persisted!");
         }
     }
 }
