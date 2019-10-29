@@ -14,7 +14,6 @@ public class FileEntry {
     private String fileName;
     private Date insertionDate;
 
-    //Needed to prevent exceptions
     protected FileEntry() {}
 
     public FileEntry(String filename, Date insertionDate){

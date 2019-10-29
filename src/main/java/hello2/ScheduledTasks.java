@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
-//Note that this is coupled completely.
-//the partsbin example is totally decoupled
 @Component
 public class ScheduledTasks {
     @Autowired
