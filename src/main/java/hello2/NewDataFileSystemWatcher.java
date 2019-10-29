@@ -1,12 +1,15 @@
 package hello2;
 
+import com.squareup.tape.QueueFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.*;
 
@@ -20,6 +23,9 @@ public class NewDataFileSystemWatcher {
     @Autowired
     private WatchService watchService;
 
+    @Autowired
+    private QueueFile queue;
+
     private void watch() {
         while (true) {
             WatchKey key;
@@ -32,13 +38,28 @@ public class NewDataFileSystemWatcher {
             for (WatchEvent<?> event : key.pollEvents()) {
                 WatchEvent.Kind<?> kind = event.kind();
 
-                System.out.println("kind " + kind.name());
                 Path path = (Path) event.context();
-                System.out.println(path.toString());
+                Path dir = (Path)key.watchable();
+                Path fullPath = dir.resolve(path);
 
-//                if(kind.equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
-//                    readOffer(path.toString());
-//                }
+                System.out.println("Enqueueing file " +
+                        path.getFileName() +
+                        " with event " +
+                        kind.name() +
+                        ".");
+
+                System.out.println(fullPath);
+                System.out.println("Exists? " + Files.exists(fullPath));
+
+                try (BufferedReader br = Files.newBufferedReader(fullPath)) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        queue.add(line.getBytes());
+                    }
+                    System.out.println("Enqueue file " + fullPath.getFileName());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             key.reset();
         }
@@ -51,7 +72,6 @@ public class NewDataFileSystemWatcher {
     public void init() throws IOException {
         filePath.register(watchService,
                 StandardWatchEventKinds.ENTRY_CREATE,
-                StandardWatchEventKinds.ENTRY_DELETE,
                 StandardWatchEventKinds.ENTRY_MODIFY);
 
         taskExecutor.execute(new Runnable() {

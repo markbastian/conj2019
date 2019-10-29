@@ -23,6 +23,7 @@
                  ;Mazes!
                  [mazegen "0.1.0-SNAPSHOT"]
                  [com.h2database/h2 "1.4.200"]
+                 [com.squareup/tape "1.2.3"]
                  ;For spring
                  [org.springframework.boot/spring-boot-starter-web "2.1.9.RELEASE"]
                  [org.springframework.boot/spring-boot-starter-data-jpa "2.1.9.RELEASE"]
