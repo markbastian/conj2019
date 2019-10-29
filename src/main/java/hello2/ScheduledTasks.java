@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 
 //Note that this is coupled completely.
 //the partsbin example is totally decoupled
@@ -24,7 +25,7 @@ public class ScheduledTasks {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 1000)
     public void reportCurrentTime() throws IOException {
         byte[] data = queue.peek();
 
@@ -32,9 +33,13 @@ public class ScheduledTasks {
             queue.remove();
             String line = new String(data);
             String[] frags = line.split(",");
-            String first = frags[0].trim();
-            String last = frags[1].trim();
-            SuperPerson superPerson = new SuperPerson(first, last);
+            for(int i = 0; i < frags.length; i++){
+                frags[i] = frags[i].trim();
+            }
+            String first = frags[0];
+            String last = frags[1];
+            String[] powers = Arrays.copyOfRange(frags, 2, frags.length);
+            SuperPerson superPerson = new SuperPerson(first, last, powers);
             log.info("Persisting customer : {}.", superPerson);
             repository.save(superPerson);
             log.info("Customer persisted!");
