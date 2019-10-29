@@ -22,8 +22,10 @@
                  [clj.qrgen "0.4.0"]
                  ;Mazes!
                  [mazegen "0.1.0-SNAPSHOT"]
+                 [com.h2database/h2 "1.4.200"]
                  ;For spring
                  [org.springframework.boot/spring-boot-starter-web "2.1.9.RELEASE"]
+                 [org.springframework.boot/spring-boot-starter-data-jpa "2.1.9.RELEASE"]
                  ]
 
   :main conj2019.core

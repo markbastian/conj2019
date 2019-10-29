@@ -8,7 +8,9 @@ A Clojure library designed to ... well, that part is up to you.
 * [The State of Java in 2019](https://www.baeldung.com/java-in-2019)
   * Spring 5 > 50%
   * Spring Boot > 60%
-
+* For Spring
+  * https://spring.io/guides/gs/accessing-data-jpa/
+  * 
 
 ## Data
 sls deploy -v
