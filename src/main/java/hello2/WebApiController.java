@@ -7,16 +7,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
-public class GreetingController {
+public class WebApiController {
     @Autowired
     FileEntryRepository fileEntryRepository;
 
     @Autowired
-    CustomerRepository customerRepository;
+    SuperPersonRepository superPersonRepository;
 
     private static final String template = "Hello, %s!";
     private final AtomicLong counter = new AtomicLong();
@@ -44,6 +43,15 @@ public class GreetingController {
     public Collection<FileEntry> files() {
         ArrayList<FileEntry> entries = new ArrayList<>();
         for(FileEntry entry : fileEntryRepository.findAll()){
+            entries.add(entry);
+        }
+        return entries;
+    }
+
+    @RequestMapping("/supers")
+    public Collection<SuperPerson> supers() {
+        ArrayList<SuperPerson> entries = new ArrayList<>();
+        for(SuperPerson entry : superPersonRepository.findAll()){
             entries.add(entry);
         }
         return entries;

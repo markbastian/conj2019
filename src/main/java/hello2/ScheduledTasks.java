@@ -9,14 +9,13 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 //Note that this is coupled completely.
 //the partsbin example is totally decoupled
 @Component
 public class ScheduledTasks {
     @Autowired
-    CustomerRepository repository;
+    SuperPersonRepository repository;
 
     @Autowired
     private QueueFile queue;
@@ -35,9 +34,9 @@ public class ScheduledTasks {
             String[] frags = line.split(",");
             String first = frags[0].trim();
             String last = frags[1].trim();
-            Customer customer = new Customer(first, last);
-            log.info("Persisting customer : {}.", customer);
-            repository.save(customer);
+            SuperPerson superPerson = new SuperPerson(first, last);
+            log.info("Persisting customer : {}.", superPerson);
+            repository.save(superPerson);
             log.info("Customer persisted!");
         }
     }
