@@ -12,14 +12,14 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 @Component
-public class ScheduledTasks {
+public class QueueToDbTask {
     @Autowired
     SuperPersonRepository repository;
 
     @Autowired
     private QueueFile queue;
 
-    private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
+    private static final Logger log = LoggerFactory.getLogger(QueueToDbTask.class);
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 

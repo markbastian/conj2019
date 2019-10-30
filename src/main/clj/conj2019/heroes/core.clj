@@ -10,21 +10,22 @@
             [clojure.java.jdbc :as j]
             [integrant.core :as ig]
             [datascript.core :as d]
-            [clojure.edn :as edn]
             [clojure.string :as cs]
             [clojure.pprint :as pp]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [taoensso.timbre :as timbre])
   (:import (java.io File)
            (java.util Date)))
 
+(def universe-query
+  '[:find ?name ?universe
+    :in $
+    :where
+    [?e :name ?name]
+    [?e :universe ?universe]])
+
 (defn heroes-by-universe [dsdb]
-  (d/q
-    '[:find ?name ?universe
-      :in $
-      :where
-      [?e :name ?name]
-      [?e :universe ?universe]]
-    dsdb))
+  (d/q universe-query dsdb))
 
 (defn app [{:keys [sql-conn dsdb path-info] :as request}]
   (case (cs/lower-case (cs/replace path-info #"/" ""))
@@ -53,37 +54,22 @@
              (.isFile file)
              (cs/ends-with? (.getName file) ".csv"))
     (do
-      (println (str "Detected change to file: " (.getName file)))
+      (timbre/debug (str "Detected change to file: " (.getName file)))
       (with-open [r (io/reader file)]
-        (println "Adding data to queue.")
+        (timbre/debug "Adding data to queue.")
         (doseq [line (line-seq r)
                 :let [[name universe & powers] (map cs/trim (cs/split line #","))]]
-          (dq/put! queue :my-queue {:name name
+          (dq/put! queue :my-queue {:name     name
                                     :universe universe
-                                    :powers powers})))
+                                    :powers   powers})))
       (j/insert! conn :files {:name (.getName file) :processed (Date.)})))
   ctx)
 
-#_
-(defn file-handler [{:keys [queue conn] :as ctx} {:keys [^File file kind] :as event}]
-  (when (and (#{:modify :create} kind)
-             (.exists file)
-             (.isFile file)
-             (cs/ends-with? (.getName file) ".edn"))
+(defn queue->dsdb [{:keys [queue-name queue dsdb]}]
+  ;(timbre/debug "Checking for new items in queue...")
+  (when-some [task (dq/take! queue queue-name 10 nil)]
     (do
-      (println (str "Detected change to file: " (.getName file)))
-      (let [data (edn/read-string (slurp file))]
-        (println "Adding data to queue.")
-        (doseq [d data]
-          (dq/put! queue :my-queue d)))
-      (j/insert! conn :files {:name (.getName file) :processed (Date.)})))
-  ctx)
-
-(defn deque-job [{:keys [queue dsdb]}]
-  ;(println "Checking for new items in queue...")
-  (when-some [task (dq/take! queue :my-queue 10 nil)]
-    (do
-      (println "Putting data into datascript")
+      (timbre/debug "Putting data into datascript")
       (d/transact! dsdb [@task])
       (dq/complete! task))))
 
@@ -98,7 +84,29 @@
                             :conn   (ig/ref ::jdbc/connection)}
    ::durable/queues        {:delete-on-halt? true
                             :directory       "/tmp"}
-   ::scheduling/job        {:job      #'deque-job
+   ::scheduling/job        {:job        #'queue->dsdb
+                            :queue-name :my-queue
+                            :schedule   {:in [5 :seconds] :every :second}
+                            :queue      (ig/ref ::durable/queues)
+                            :dsdb       (ig/ref ::datascript/connection)}
+   ::web/server            {:host     "0.0.0.0"
+                            :port     3000
+                            :sql-conn (ig/ref ::jdbc/connection)
+                            :dsdb     (ig/ref ::datascript/connection)
+                            :handler  #'app}})
+
+(def config2
+  {::jdbc/connection       {:connection-uri "jdbc:h2:mem:mem_only"}
+   ::jdbc/init             {:conn (ig/ref ::jdbc/connection)}
+   ::datascript/connection {:name   {:db/unique :db.unique/identity}
+                            :powers {:db/cardinality :db.cardinality/many}}
+   ::hawk/watch            {:groups [{:paths   ["example"]
+                                      :handler #'file-handler}]
+                            :queue  (ig/ref ::durable/queues)
+                            :conn   (ig/ref ::jdbc/connection)}
+   ::durable/queues        {:delete-on-halt? true
+                            :directory       "/tmp"}
+   ::scheduling/job        {:job      #'queue->dsdb
                             :schedule {:in [5 :seconds] :every :second}
                             :queue    (ig/ref ::durable/queues)
                             :dsdb     (ig/ref ::datascript/connection)}
