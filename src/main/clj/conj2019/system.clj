@@ -24,7 +24,7 @@
         [:li [:a {:href "/eliza"} "Visit Eliza, a low-tech psychiatrist"]]
         [:li [:a {:href "/horsemen"} "Defeat the 4 horsemen!"]]]])))
 
-(def app
+(def handler
   (ring/ring-handler
     (ring/router
       [["/" {:handler hello-world-handler}]
@@ -45,6 +45,11 @@
 
 (def config {::web/server {:port    3000
                            :host    "0.0.0.0"
-                           :handler #'app}})
+                           :handler #'handler}})
 
 (defonce sys (partsbin/create config))
+
+(comment
+  (require '[ring.mock.request :as mock])
+  (handler (mock/request :get "/v0/time"))
+  )

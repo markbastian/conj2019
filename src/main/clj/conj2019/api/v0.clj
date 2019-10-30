@@ -5,6 +5,7 @@
   (:import (java.util Date)))
 
 (def web-page
+  "A data"
   (html5
     [:h1 "Welcome to my API, Version 0"]
     [:h2 "This is just a static web page that doesn't do anything super interesting."]
@@ -24,6 +25,7 @@
      :total-memory-MB (/ (.totalMemory rt) mb)}))
 
 (def routes
+  "Data-driven routes."
   [["/v0" {:handler (constantly (ok web-page))}]
    ["/v0"
     ["/time" {:handler (fn [_] (ok (str "The time is: " (Date.))))}]

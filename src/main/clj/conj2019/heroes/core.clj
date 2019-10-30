@@ -13,7 +13,13 @@
             [clojure.string :as cs]
             [clojure.pprint :as pp]
             [clojure.java.io :as io]
-            [taoensso.timbre :as timbre])
+            [taoensso.timbre :as timbre]
+            [reitit.ring :as ring]
+            [reitit.coercion.spec]
+            [ring.middleware.params :as params]
+            [muuntaja.middleware :as middleware]
+            [ring.util.http-response :refer [ok not-found resource-response]]
+            [clojure.edn :as edn])
   (:import (java.io File)
            (java.util Date)))
 
@@ -27,11 +33,25 @@
 (defn heroes-by-universe [dsdb]
   (d/q universe-query dsdb))
 
-(defn app [{:keys [sql-conn dsdb path-info] :as request}]
-  (case (cs/lower-case (cs/replace path-info #"/" ""))
-    "supers" {:status 200 :body (with-out-str (pp/pprint (heroes-by-universe @dsdb)))}
-    "files" {:status 200 :body (with-out-str (pp/pprint (j/query sql-conn "SELECT * FROM FILES")))}
-    {:status 404 :body (format "No match for %s" path-info)}))
+(def routes
+  [["/echo" {:get (fn [request]
+                    (ok (with-out-str (pp/pprint request))))}]
+   ["/supers" {:get (fn [{:keys [dsdb]}]
+                      (ok (heroes-by-universe @dsdb)))}]
+   ["/files" {:get (fn [{:keys [sql-conn]}]
+                     (ok (j/query sql-conn "SELECT * FROM FILES")))}]])
+
+(def router
+  (ring/router
+    routes
+    {:data {:coercion   reitit.coercion.spec/coercion
+            :middleware [params/wrap-params
+                         middleware/wrap-format]}}))
+
+(def handler
+  (ring/ring-handler
+    router
+    (constantly (not-found "Not found"))))
 
 (def file-table-ddl
   (j/create-table-ddl
@@ -73,11 +93,13 @@
       (d/transact! dsdb [@task])
       (dq/complete! task))))
 
+(def schema {:name   {:db/unique :db.unique/identity}
+             :powers {:db/cardinality :db.cardinality/many}})
+
 (def config
   {::jdbc/connection       {:connection-uri "jdbc:h2:mem:mem_only"}
    ::jdbc/init             {:conn (ig/ref ::jdbc/connection)}
-   ::datascript/connection {:name   {:db/unique :db.unique/identity}
-                            :powers {:db/cardinality :db.cardinality/many}}
+   ::datascript/connection schema
    ::hawk/watch            {:groups [{:paths   ["example"]
                                       :handler #'file-handler}]
                             :queue  (ig/ref ::durable/queues)
@@ -90,34 +112,73 @@
                             :queue      (ig/ref ::durable/queues)
                             :dsdb       (ig/ref ::datascript/connection)}
    ::web/server            {:host     "0.0.0.0"
-                            :port     3000
+                            :port     3001
                             :sql-conn (ig/ref ::jdbc/connection)
                             :dsdb     (ig/ref ::datascript/connection)
-                            :handler  #'app}})
-
-(def config2
-  {::jdbc/connection       {:connection-uri "jdbc:h2:mem:mem_only"}
-   ::jdbc/init             {:conn (ig/ref ::jdbc/connection)}
-   ::datascript/connection {:name   {:db/unique :db.unique/identity}
-                            :powers {:db/cardinality :db.cardinality/many}}
-   ::hawk/watch            {:groups [{:paths   ["example"]
-                                      :handler #'file-handler}]
-                            :queue  (ig/ref ::durable/queues)
-                            :conn   (ig/ref ::jdbc/connection)}
-   ::durable/queues        {:delete-on-halt? true
-                            :directory       "/tmp"}
-   ::scheduling/job        {:job      #'queue->dsdb
-                            :schedule {:in [5 :seconds] :every :second}
-                            :queue    (ig/ref ::durable/queues)
-                            :dsdb     (ig/ref ::datascript/connection)}
-   ::web/server            {:host     "0.0.0.0"
-                            :port     3000
-                            :sql-conn (ig/ref ::jdbc/connection)
-                            :dsdb     (ig/ref ::datascript/connection)
-                            :handler  #'app}})
+                            :handler  #'handler}})
 
 (defonce sys (create config))
 
 (comment
   (let [{:keys [::jdbc/connection]} (system sys)]
-    (j/query connection "SELECT 1")))
+    (j/query connection "SELECT 1"))
+
+  ;Test route matching
+  (let [router (ring/router routes)]
+    (r/match-by-path router "/supers"))
+
+
+
+  (require '[ring.mock.request :as mock])
+
+  (handler (mock/request :get "/echo"))
+
+  ;Independently test routing
+  ;Has *NO* knowledge of function implementation, handler, etc.
+  (let [router (ring/router routes)]
+    (r/match-by-path router "/supers"))
+
+  (def sample-data
+    [{:name     "Spiderman"
+      :universe "Marvel"
+      :powers   ["Peter Tingle" "Spidersense"]}
+     {:name     "Batman"
+      :universe "DC"
+      :powers   ["Utility Belt" "Rich"]}
+     {:name     "Superman"
+      :universe "DC"
+      :powers   ["Flight" "Strength"]}
+     {:name     "Hulk"
+      :universe "Marvel"
+      :powers   ["Strength"]}
+     {:name     "Vision"
+      :universe "Marvel"
+      :powers   ["Flight"]}])
+
+  ;Independently test the logic being employed by the service
+  ;Has *NO* knowlege of the service
+  (let [db (d/db-with
+             (d/empty-db schema)
+             sample-data)]
+    (heroes-by-universe db))
+
+  ;Independently test the handler
+  ;Has *NO* knowlege of the server or the rest of the system
+  (let [dsdb (doto
+               (d/create-conn)
+               (d/transact! sample-data))
+        request (-> (mock/request :get "/supers")
+                    (assoc :dsdb dsdb))]
+    (-> request
+        handler
+        :body
+        slurp
+        edn/read-string))
+
+  )
+
+#_(defn app [{:keys [sql-conn dsdb path-info] :as request}]
+    (case (cs/lower-case (cs/replace path-info #"/" ""))
+      "supers" {:status 200 :body (with-out-str (pp/pprint (heroes-by-universe @dsdb)))}
+      "files" {:status 200 :body (with-out-str (pp/pprint (j/query sql-conn "SELECT * FROM FILES")))}
+      {:status 404 :body (format "No match for %s" path-info)}))
