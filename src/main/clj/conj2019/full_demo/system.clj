@@ -1,17 +1,17 @@
-(ns conj2019.system
-  (:require [hiccup.page :refer [html5 include-js include-css]]
+(ns conj2019.full_demo.system
+  (:require [drawbridge.core]
+            [clj.qrgen :as qr]
+            [conj2019.full_demo.web.eliza-app :as eliza]
+            [conj2019.full_demo.web.horsemen-app :as horsemen]
+            [conj2019.full_demo.web.v0 :as v0]
+            [hiccup.page :refer [html5 include-js include-css]]
             [partsbin.core :as partsbin]
             [partsbin.immutant.web.core :as web]
-            [conj2019.web.eliza-app :as eliza]
-            [drawbridge.core]
+            [reitit.ring :as ring]
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.defaults :refer [wrap-defaults api-defaults site-defaults]]
             [ring.middleware.json :refer [wrap-json-response]]
-            [ring.util.http-response :refer [ok not-found resource-response]]
-            [reitit.ring :as ring]
-            [clj.qrgen :as qr]
-            [conj2019.api.v0 :as v0]
-            [conj2019.web.horsemen-app :as horsemen]))
+            [ring.util.http-response :refer [ok not-found resource-response]]))
 
 (defn hello-world-handler [request]
   (ok

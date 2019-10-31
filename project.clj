@@ -33,7 +33,7 @@
                  [org.springframework.boot/spring-boot-starter-data-jpa "2.1.9.RELEASE"]
                  ]
 
-  :main conj2019.core
+  :main conj2019.full_demo.core
 
   :plugins [[lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]
             [lein-uberwar "0.2.1"]
@@ -79,7 +79,7 @@
                                                            "aws:autoscaling:launchconfiguration"
                                                            {"InstanceType" "t2.micro"}}}]}}}}
 
-  :repl-options {:init-ns conj2019.system}
+  :repl-options {:init-ns conj2019.full_demo.system}
 
   :aliases {"deploy-ebs-tomcat" ["do"
                                  ["clean"]

@@ -1,4 +1,4 @@
-(ns conj2019.api.v0
+(ns conj2019.full_demo.web.v0
   (:require [hiccup.page :refer [html5 include-js include-css]]
             [ring.util.http-response :refer [ok not-found]]
             [clojure.pprint :as pp])

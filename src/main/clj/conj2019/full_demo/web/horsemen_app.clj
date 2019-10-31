@@ -1,4 +1,4 @@
-(ns conj2019.web.horsemen-app
+(ns conj2019.full_demo.web.horsemen-app
   (:require [conj2019.rules :as rules]
             [clojure.string :as cs]
             [hiccup.page :refer [html5]]

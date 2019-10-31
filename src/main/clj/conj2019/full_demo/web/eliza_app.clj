@@ -1,4 +1,4 @@
-(ns conj2019.web.eliza-app
+(ns conj2019.full_demo.web.eliza-app
   (:require [conj2019.eliza :as eliza]
             [hiccup.page :refer [html5]]
             [ring.util.http-response :refer [ok not-found]]))

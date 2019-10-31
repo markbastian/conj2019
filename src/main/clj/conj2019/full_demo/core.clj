@@ -1,10 +1,10 @@
-(ns conj2019.core
+(ns conj2019.full_demo.core
   (:gen-class)
   (:require [environ.core :refer [env]]
             [partsbin.core :as partsbin]
             [taoensso.timbre :as timbre]
             [nrepl.server :refer [start-server stop-server]]
-            [conj2019.system :refer [sys]]))
+            [conj2019.full_demo.system :refer [sys]]))
 
 (defn -main [& args]
   (let [nrepl-port (some->> :nrepl-port env (re-matches #"\d+") Long/parseLong)
