@@ -1,13 +1,24 @@
 (ns conj2019.concepts.v0
-  (:require [partsbin.core :refer [create start stop restart system reset-config!]]
-            [partsbin.immutant.web.core :as web]))
+  (:require [immutant.web :as immutant]))
 
-(defn app [request]
+(comment
+  (def server (immutant/run
+                (fn [request]
+                  {:status 200 :body "OK"})
+                {:port 3000 :host "0.0.0.0"}))
+  (immutant/stop server))
+
+(defn handler [request]
   {:status 200 :body "OK"})
 
-(def config
-  {::web/server {:host     "0.0.0.0"
-                 :port     3000
-                 :handler  #'app}})
+(comment
+  (def server (immutant/run
+                handler
+                {:port 3000 :host "0.0.0.0"}))
+  (immutant/stop server))
 
-(defonce sys (create config))
+(comment
+  (def server (immutant/run
+                #'handler
+                {:port 3000 :host "0.0.0.0"}))
+  (immutant/stop server))

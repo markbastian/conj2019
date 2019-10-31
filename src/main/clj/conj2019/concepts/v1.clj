@@ -1,14 +1,21 @@
 (ns conj2019.concepts.v1
-  (:require [partsbin.core :refer [create start stop restart system reset-config!]]
-            [partsbin.immutant.web.core :as web]))
+  (:require [integrant.core :as ig]
+            [immutant.web :as immutant]))
 
-(defn app [{:keys [message] :as request}]
-  {:status 200 :body message})
+(defmethod ig/init-key :web/server [_ {:keys [handler host port]}]
+  (immutant/run handler :host host :port port))
+
+(defmethod ig/halt-key! :web/server [_ server]
+  (immutant/stop server))
+
+(defn handler [request]
+  {:status 200 :body "OK"})
 
 (def config
-  {::web/server {:host    "0.0.0.0"
-                 :port    3000
-                 :message "I <3 Clojure!"
-                 :handler #'app}})
+  {::web/server {:host     "0.0.0.0"
+                 :port     3000
+                 :handler  #'handler}})
 
-(defonce sys (create config))
+(comment
+  (def sys (ig/init config))
+  (ig/halt! sys))
