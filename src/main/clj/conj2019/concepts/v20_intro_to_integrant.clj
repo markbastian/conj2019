@@ -44,5 +44,9 @@
 
 (comment
   (start sys)
+
+  ;Populate the db
+  (-> @sys :datascript/conn (d/transact! dsdb/sample-data))
+
   (stop sys)
   (restart sys))
