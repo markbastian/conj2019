@@ -20,3 +20,4 @@ cljs-runtime/
 main.js
 manifest.edn
 queue_tmp
+.DS_Store

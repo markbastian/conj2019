@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [markbastian/partsbin "0.1.3-SNAPSHOT"]
                  [com.taoensso/timbre "4.10.0"]
+                 [clj-http "3.10.0"]
                  [environ "1.1.0"]
                  [hawk "0.2.11"]
                  [hiccup "1.0.5"]
