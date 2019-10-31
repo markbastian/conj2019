@@ -1,4 +1,4 @@
-(ns conj2019.hello-world.v0
+(ns conj2019.hello.core
   "A raw 1:1 implementation of our Spring Boot hello world app."
   (:require [immutant.web :as immutant]
             [clojure.string :as cs]
@@ -16,11 +16,7 @@
     (case path-info
       "/greeting" {:response 200
                    :body     (ch/encode {:id      (swap! state inc)
-                                         :content (format "Hello, %s!" name)})}
-      "/reset" {:response 200
-                :body     (ch/encode {:id (reset! state 0)})}
-      {:response 404
-       :body     (format "Unknown route: %s" path-info)})))
+                                         :content (format "Hello, %s!" name)})})))
 
 (comment
   (def server (immutant/run #'app {:port 3000 :host "0.0.0.0"}))

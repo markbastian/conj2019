@@ -1,4 +1,4 @@
-package hello1;
+package conj2019.hello;
 
 public class Greeting {
 

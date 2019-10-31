@@ -1,4 +1,4 @@
-package hello;
+package conj2019.hello_plus_scheduling;
 
 public class Greeting {
 
