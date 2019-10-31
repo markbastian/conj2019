@@ -49,7 +49,7 @@
 (def config {:port 3000 :host "0.0.0.0"})
 
 ;I've got generic, server, etc. agnostic functions
-;My system is still complicated, though
+;My system is still complicated, though :(
 (def server
   (let [conn (doto
                (d/create-conn dsdb/schema)
