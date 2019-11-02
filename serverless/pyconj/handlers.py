@@ -10,5 +10,9 @@ def ok(body):
             'body': body}
 
 
+def bad_echo(event, context):
+    return ok(event)
+
+
 def echo(event, context):
     return ok(json.dumps(event))

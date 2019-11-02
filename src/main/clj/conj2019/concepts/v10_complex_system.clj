@@ -51,8 +51,9 @@
 (def config {:port 3000 :host "0.0.0.0"})
 
 (def server (immutant/run #'handler config))
-
 (comment
+  (def server (immutant/run #'handler config))
+
   (immutant/stop server)
 
   ;Hmmm, stateful. Not so good for testing

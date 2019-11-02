@@ -127,8 +127,6 @@
   (let [router (ring/router routes)]
     (r/match-by-path router "/supers"))
 
-
-
   (require '[ring.mock.request :as mock])
 
   (handler (mock/request :get "/echo"))
@@ -173,12 +171,4 @@
         handler
         :body
         slurp
-        edn/read-string))
-
-  )
-
-#_(defn app [{:keys [sql-conn dsdb path-info] :as request}]
-    (case (cs/lower-case (cs/replace path-info #"/" ""))
-      "supers" {:status 200 :body (with-out-str (pp/pprint (heroes-by-universe @dsdb)))}
-      "files" {:status 200 :body (with-out-str (pp/pprint (j/query sql-conn "SELECT * FROM FILES")))}
-      {:status 404 :body (format "No match for %s" path-info)}))
+        edn/read-string)))

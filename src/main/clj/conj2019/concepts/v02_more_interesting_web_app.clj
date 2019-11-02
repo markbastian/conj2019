@@ -22,9 +22,12 @@
     "/dump" {:status 200 :body (with-out-str (pp/pprint request))}
     {:status 404 :body (format "Unknown path: %s" uri)}))
 
+;I can execute and test this all by itself!
+(handler (mock/request :get "/time"))
+;=> {:status 200, :body "The time is Fri Nov 01 17:30:17 MDT 2019"}
+
 (def config {:port 3000 :host "0.0.0.0"})
 
-;Still have this ns-global def that runs when loaded :(
 (def server
   (immutant/run
     ;Var quote to allow refreshing of the handler
@@ -32,6 +35,13 @@
     config))
 
 (comment
+  ;Still have this ns-global def that runs when loaded :(
+  (def server
+    (immutant/run
+      ;Var quote to allow refreshing of the handler
+      #'handler
+      config))
+
   (immutant/stop server)
   ;I can execute and test this all by itself!
   (handler (mock/request :get "/time")))

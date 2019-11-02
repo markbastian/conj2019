@@ -3,6 +3,13 @@ service: simple-lambda
 provider:
   name: aws
   runtime: python3.7
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - logs:CreateLogGroup
+        - logs:CreateLogStream
+        - logs:PutLogEvents
+      Resource: '*'
 
 package:
   include:
@@ -11,8 +18,15 @@ package:
     - requirements.txt
     - serverless.yml
 
-# Maybe remove cors/other security here since this is just an example
 functions:
+  BadEchoHandler:
+    handler: pyconj.handlers.bad_echo
+    events:
+      - http:
+          path: bad_echo
+          method: get
+          cors: true
+
   EchoHandler:
     handler: pyconj.handlers.echo
     events:
@@ -20,6 +34,7 @@ functions:
           path: echo
           method: get
           cors: true
+
 
 # sls plugin install -n serverless-python-requirements
 plugins:

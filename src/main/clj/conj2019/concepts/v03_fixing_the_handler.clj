@@ -39,9 +39,7 @@
 ;Router - Independent concern from the handler
 (def router
   (ring/router
-    [
-     route-data
-     ["/foo" {:get (fn [request] (ok {:nu 33}))}]]
+    route-data
     {:data {:coercion   reitit.coercion.spec/coercion
             :middleware [params/wrap-params
                          middleware/wrap-format]}}))
@@ -54,9 +52,9 @@
 
 (def config {:port 3000 :host "0.0.0.0"})
 
-(def server (immutant/run #'handler config))
-
 (comment
+  (def server (immutant/run #'handler config))
+
   (immutant/stop server)
 
   ;Execute functions independently

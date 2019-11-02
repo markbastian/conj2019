@@ -48,6 +48,7 @@
 
 (def config {:port 3000 :host "0.0.0.0"})
 
+(comment
 ;I've got generic, server, etc. agnostic functions
 ;My system is still complicated, though :(
 (def server
@@ -58,19 +59,18 @@
       (wrap-component #'handler {:conn conn})
       config)))
 
-(comment
-  (immutant/stop server)
+(immutant/stop server)
 
-  ;Yay! I can mock it up as a function
-  ;I now have all the goodness from before
-  (let [conn (doto
-               (d/create-conn dsdb/schema)
-               (d/transact! dsdb/sample-data))]
-    (-> (mock/request :get "/weapons?name=Mark")
-        (assoc :conn conn)
-        handler
-        :body
-        slurp
-        ch/parse-string))
-  ;=> ("REPL" "Data")
+;Yay! I can mock it up as a function
+;I now have all the goodness from before
+(let [conn (doto
+             (d/create-conn dsdb/schema)
+             (d/transact! dsdb/sample-data))]
+  (-> (mock/request :get "/weapons?name=Mark")
+      (assoc :conn conn)
+      handler
+      :body
+      slurp
+      ch/parse-string))
+;=> ("REPL" "Data")
   )
