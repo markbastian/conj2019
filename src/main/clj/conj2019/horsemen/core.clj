@@ -1,4 +1,4 @@
-(ns conj2019.heroes.core
+(ns conj2019.horsemen.core
   (:require [partsbin.core :refer [create start stop restart system reset-config!]]
             [partsbin.hawk.core.core :as hawk]
             [partsbin.immutant.web.core :as web]
@@ -14,67 +14,66 @@
             [clojure.pprint :as pp]
             [clojure.java.io :as io]
             [taoensso.timbre :as timbre]
-            [reitit.core :as r]
             [reitit.ring :as ring]
             [reitit.coercion.spec]
+            [reitit.core :as r]
             [ring.middleware.params :as params]
             [ring.mock.request :as mock]
             [muuntaja.middleware :as middleware]
-            [ring.util.http-response :refer [ok not-found resource-response]]
-            [clojure.edn :as edn])
+            [ring.util.http-response :refer [ok not-found resource-response bad-request]]
+            [conj2019.horsemen.weapons-api :as w]
+            [conj2019.horsemen.files-api :as f]
+            [cheshire.core :as ch]
+            [clj-http.client :as client])
   (:import (java.io File)
            (java.util Date)))
 
-(def universe-query
-  '[:find ?name ?universe
-    :in $
-    :where
-    [?e :name ?name]
-    [?e :universe ?universe]])
-
-(defn supers-by-universe [dsdb]
-  (d/q universe-query dsdb))
-
+;Handlers
 (defn echo-handler [request]
   (ok (with-out-str (pp/pprint request))))
 
-(defn supers-handler [{:keys [dsdb]}]
-  (ok (supers-by-universe @dsdb)))
+(defn weapons-query-handler [{{:strs [name]} :params :keys [conn] :as request}]
+  (ok
+    (if name
+      (w/weapons @conn [name])
+      (w/everybodys-weapons @conn))))
+
+(defn add-weapons-handler [{:keys [params conn] :as request}]
+  (println params)
+  (let [data (map (fn [[k v]] {:name k :weapon v}) params)]
+    (do
+      (d/transact! conn data)
+      (ok (w/weapons @conn (keys params))))))
 
 (defn files-handler [{:keys [sql-conn]}]
-  (ok (j/query sql-conn "SELECT * FROM FILES")))
+  (ok (f/all-processed-files sql-conn)))
 
-(def routes
+;Routes - All data
+(def basic-routes
   [["/echo" {:get echo-handler}]
-   ["/supers" {:get supers-handler}]
    ["/files" {:get files-handler}]])
 
+(def weapons-routes
+  [["/weapons" weapons-query-handler]
+   ["/add_weapon" add-weapons-handler]])
+
+;Router
 (def router
   (ring/router
-    routes
+    ;We were able to compose the routes here
+    [basic-routes weapons-routes]
     {:data {:coercion   reitit.coercion.spec/coercion
             :middleware [params/wrap-params
                          middleware/wrap-format]}}))
 
+;Global handler
 (def handler
   (ring/ring-handler
     router
     (constantly (not-found "Not found"))))
 
-(def file-table-ddl
-  (j/create-table-ddl
-    :files
-    [[:name "varchar"]
-     [:processed :time]]))
-
-(defn setup [conn]
-  (j/db-do-commands
-    conn
-    [file-table-ddl
-     "CREATE INDEX name_ix ON files ( name );"]))
-
 (defmethod ig/init-key ::jdbc/init [_ {:keys [conn]}]
-  (setup conn))
+  (f/setup conn))
 
 (defn file-handler [{:keys [queue conn] :as ctx} {:keys [^File file kind] :as event}]
   (when (and (#{:modify :create} kind)
@@ -86,11 +85,12 @@
       (with-open [r (io/reader file)]
         (timbre/debug "Adding data to queue.")
         (doseq [line (line-seq r)
-                :let [[name universe & powers] (map cs/trim (cs/split line #","))]]
-          (dq/put! queue :my-queue {:name     name
-                                    :universe universe
-                                    :powers   powers})))
-      (j/insert! conn :files {:name (.getName file) :processed (Date.)})))
+                :let [[name & weapons] (map cs/trim (cs/split line #","))
+                      data (cond-> {:name name}
+                                   (seq weapons)
+                                   (assoc :weapon weapons))]]
+          (dq/put! queue :my-queue data)))
+      (f/insert-file conn {:name (.getName file) :processed (Date.)})))
   ctx)
 
 (defn queue->dsdb [{:keys [queue-name queue dsdb]}]
@@ -101,13 +101,10 @@
       (d/transact! dsdb [@task])
       (dq/complete! task))))
 
-(def schema {:name   {:db/unique :db.unique/identity}
-             :powers {:db/cardinality :db.cardinality/many}})
-
 (def config
   {::jdbc/connection       {:connection-uri "jdbc:h2:mem:mem_only"}
    ::jdbc/init             {:conn (ig/ref ::jdbc/connection)}
-   ::datascript/connection schema
+   ::datascript/connection w/schema
    ::hawk/watch            {:groups [{:paths   ["example"]
                                       :handler #'file-handler}]
                             :queue  (ig/ref ::durable/queues)
@@ -122,61 +119,72 @@
    ::web/server            {:host     "0.0.0.0"
                             :port     3001
                             :sql-conn (ig/ref ::jdbc/connection)
-                            :dsdb     (ig/ref ::datascript/connection)
+                            :conn     (ig/ref ::datascript/connection)
                             :handler  #'handler}})
 
 (defonce sys (create config))
 
 (comment
+  ;;Access live system components
   (let [{:keys [::jdbc/connection]} (system sys)]
     (j/query connection "SELECT 1"))
 
+  (let [{:keys [::datascript/connection]} (system sys)]
+    connection)
+
+  ;;Develop queries agains the live system
+  (let [{:keys [::datascript/connection]} (system sys)
+        db @connection]
+    (d/q
+      '[:find ?name ?weapon
+        :in $
+        :where
+        [?e :weapon ?weapon]
+        [?e :name ?name]]
+      db))
+
+  (let [{:keys [::datascript/connection]} (system sys)
+        db @connection]
+    (weapons db ["Mark" "War" "Complexity"]))
+
   ;Test route matching
-  (let [router (ring/router routes)]
-    (r/match-by-path router "/supers"))
+  ;Has *NO* knowledge of function implementation, handler, etc.
+  (r/match-by-path router "/weapons")
+  (r/match-by-path router "/weapon")
 
-  (require '[ring.mock.request :as mock])
-
+  ;Test handlers independently
   (handler (mock/request :get "/echo"))
 
-  ;Independently test routing
-  ;Has *NO* knowledge of function implementation, handler, etc.
-  (let [router (ring/router routes)]
-    (r/match-by-path router "/supers"))
-
-  (def sample-data
-    [{:name     "Spiderman"
-      :universe "Marvel"
-      :powers   ["Peter Tingle" "Spidersense"]}
-     {:name     "Batman"
-      :universe "DC"
-      :powers   ["Utility Belt" "Rich"]}
-     {:name     "Superman"
-      :universe "DC"
-      :powers   ["Flight" "Strength"]}
-     {:name     "Hulk"
-      :universe "Marvel"
-      :powers   ["Strength"]}
-     {:name     "Vision"
-      :universe "Marvel"
-      :powers   ["Flight"]}])
-
-  ;Independently test the logic being employed by the service
-  ;Has *NO* knowlege of the service
-  (let [db (d/db-with
-             (d/empty-db schema)
-             sample-data)]
-    (supers-by-universe db))
-
-  ;Independently test the handler
-  ;Has *NO* knowlege of the server or the rest of the system
-  (let [dsdb (doto
-               (d/create-conn)
-               (d/transact! sample-data))
-        request (-> (mock/request :get "/supers")
-                    (assoc :dsdb dsdb))]
-    (-> request
+  ;Even test a handler that requires a component
+  (let [conn (doto (d/create-conn w/schema)
+               (d/transact! w/sample-data))]
+    (-> (mock/request :get "/weapons")
+        (assoc :conn conn)
         handler
         :body
         slurp
-        edn/read-string)))
+        (ch/parse-string true)))
+
+  (let [conn (doto (d/create-conn w/schema)
+               (d/transact! w/sample-data))]
+    (-> (mock/request :get "/weapons?name=Complexity")
+        (assoc :conn conn)
+        handler
+        :body
+        slurp
+        (ch/parse-string true)))
+
+  ;;Finally, I can test against the entire system
+  (let [request {:method :get
+                 :as     :json
+                 :url    "http://localhost:3001/weapons"}]
+    (->> (client/request request)
+         :body))
+
+  (let [request {:method :get
+                 :as     :json
+                 :url    "http://localhost:3001/weapons"
+                 :query-params {:name "Mark"}}]
+    (->> (client/request request)
+         :body))
+  )
