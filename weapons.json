@@ -1,0 +1,24 @@
+[
+  {
+    "name": "Famine",
+    "weapons": [
+      "Scales"
+    ]
+  },
+  {
+    "name": "Pestilence",
+    "weapons": [
+      "Bow",
+      "Arrow"
+    ]
+  },
+  {
+    "name": "War",
+    "weapons": [
+      "Sword"
+    ]
+  },
+  {
+    "name": "Death"
+  }
+]

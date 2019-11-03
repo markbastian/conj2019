@@ -75,6 +75,12 @@
 (defmethod ig/init-key ::jdbc/init [_ {:keys [conn]}]
   (f/setup conn))
 
+(defn line->record [line]
+  (let [[name & weapons] (map cs/trim (cs/split line #","))]
+    (cond-> {:name name}
+            (seq weapons)
+            (assoc :weapon weapons))))
+
 (defn file-handler [{:keys [queue conn] :as ctx} {:keys [^File file kind] :as event}]
   (when (and (#{:modify :create} kind)
              (.exists file)
@@ -84,12 +90,8 @@
       (timbre/debug (str "Detected change to file: " (.getName file)))
       (with-open [r (io/reader file)]
         (timbre/debug "Adding data to queue.")
-        (doseq [line (line-seq r)
-                :let [[name & weapons] (map cs/trim (cs/split line #","))
-                      data (cond-> {:name name}
-                                   (seq weapons)
-                                   (assoc :weapon weapons))]]
-          (dq/put! queue :my-queue data)))
+        (doseq [line (line-seq r)]
+          (dq/put! queue :my-queue line)))
       (f/insert-file conn {:name (.getName file) :processed (Date.)})))
   ctx)
 
@@ -98,7 +100,7 @@
   (when-some [task (dq/take! queue queue-name 10 nil)]
     (do
       (timbre/debug "Putting data into datascript")
-      (d/transact! dsdb [@task])
+      (d/transact! dsdb [(line->record @task)])
       (dq/complete! task))))
 
 (def config
@@ -117,7 +119,7 @@
                             :queue      (ig/ref ::durable/queues)
                             :dsdb       (ig/ref ::datascript/connection)}
    ::web/server            {:host     "0.0.0.0"
-                            :port     3001
+                            :port     3000
                             :sql-conn (ig/ref ::jdbc/connection)
                             :conn     (ig/ref ::datascript/connection)
                             :handler  #'handler}})
@@ -177,14 +179,30 @@
   ;;Finally, I can test against the entire system
   (let [request {:method :get
                  :as     :json
-                 :url    "http://localhost:3001/weapons"}]
+                 :url    "http://localhost:3000/weapons"}]
     (->> (client/request request)
-         :body))
+         :body
+         (mapv (fn [[k v]]
+                 {:name    k
+                  :weapons v}))))
 
   (let [request {:method :get
                  :as     :json
-                 :url    "http://localhost:3001/weapons"
-                 :query-params {:name "Mark"}}]
+                 :url    "http://localhost:3000/weapons"}]
     (->> (client/request request)
          :body))
+
+  (let [request {:method       :get
+                 :as           :json
+                 :url          "http://localhost:3000/weapons"
+                 :query-params {:name "Mark"}}]
+    (get (client/request request) :body))
+
+(let [request {:method       :get
+               :as           :json
+               :url          "http://localhost:3000/weapons"
+               :query-params {:name "Famine"}}]
+  (->> (client/request request)
+       :body
+       println))
   )
