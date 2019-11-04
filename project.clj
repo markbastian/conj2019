@@ -34,7 +34,7 @@
                  [org.springframework.boot/spring-boot-starter-data-jpa "2.1.9.RELEASE"]
                  ]
 
-  :main conj2019.full_demo.core
+  :main conj2019.hello.core
 
   :plugins [[lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]
             [lein-uberwar "0.2.1"]
@@ -55,19 +55,6 @@
                                          [haslett "0.1.6"]
                                          [cljs-ajax "0.8.0"]]}
              :uberjar    {:aot :all}
-             :ebs-tomcat {:uberwar      {:handler clj-cloud-playground.core/app}
-                          :ring         {:handler clj-cloud-playground.core/app}
-                          :aws          {:beanstalk
-                                         {:region       "us-east-1"
-                                          :stack-name   "64bit Amazon Linux 2018.03 v3.3.0 running Tomcat 8.5 Java 8"
-                                          :s3-bucket    "conj2019"
-                                          :environments [{:name    "development"
-                                                          :options {"aws:autoscaling:asg"
-                                                                    {"MinSize" "1" "MaxSize" "1"}
-                                                                    "aws:autoscaling:launchconfiguration"
-                                                                    {"InstanceType" "t2.micro"}}}]}}
-                          :dependencies [[commons-fileupload/commons-fileupload "1.4"]
-                                         [javax.xml.bind/jaxb-api "2.4.0-b180830.0359"]]}
              :ebs-docker {:zip ["Dockerfile" "target/conj2019-0.1.0-SNAPSHOT-standalone.jar"]
                           ;["Dockerfile" "target/clj-cloud-playground-0.1.0-SNAPSHOT-standalone.jar" ".ebextensions"]
                           :aws {:beanstalk
@@ -80,7 +67,7 @@
                                                            "aws:autoscaling:launchconfiguration"
                                                            {"InstanceType" "t2.micro"}}}]}}}}
 
-  :repl-options {:init-ns conj2019.full_demo.system}
+  :repl-options {:init-ns conj2019.hello.core}
 
   :aliases {"deploy-ebs-tomcat" ["do"
                                  ["clean"]
