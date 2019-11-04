@@ -1,4 +1,4 @@
-(ns conj2019.programming-quotes-api.core
+(ns conj2019.misc.programming-quotes-api
   "Examples built around https://github.com/skolakoda/programming-quotes-api"
   (:require [clj-http.client :as client]
             [clojure.string :as cs]))

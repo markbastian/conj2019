@@ -1,4 +1,4 @@
-(ns conj2019.maven.core
+(ns conj2019.misc.maven
   (:require [clj-http.client :as client]
             [clojure.string :as cs]
             [clojure.set :refer [rename-keys]]))
