@@ -1,4 +1,4 @@
-(ns conj2019.hello.core
+(ns conj2019.hello.v0
   "A raw 1:1 implementation of our Spring Boot hello world app."
   (:require [immutant.web :as immutant]
             [clojure.string :as cs]
