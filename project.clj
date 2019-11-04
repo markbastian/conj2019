@@ -34,7 +34,7 @@
                  [org.springframework.boot/spring-boot-starter-data-jpa "2.1.9.RELEASE"]
                  ]
 
-  :main conj2019.full_demo.core
+  :main conj2019.heroes.core
 
   :plugins [[lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]
             [lein-uberwar "0.2.1"]
@@ -47,14 +47,8 @@
   :resource-paths ["src/main/resources"]
   :java-source-paths ["src/main/java"]
 
-  :cljsbuild {:builds [{:id           "dev"
-                        :source-paths ["src/main/cljs" "src/main/cljc"]}]}
 
-  :profiles {:cljs       {:dependencies [[org.clojure/clojurescript "1.10.520"]
-                                         [reagent "0.9.0-rc1"]
-                                         [haslett "0.1.6"]
-                                         [cljs-ajax "0.8.0"]]}
-             :uberjar    {:aot :all}
+  :profiles {:uberjar    {:aot :all}
              :ebs-tomcat {:uberwar      {:handler clj-cloud-playground.core/app}
                           :ring         {:handler clj-cloud-playground.core/app}
                           :aws          {:beanstalk
@@ -80,7 +74,7 @@
                                                            "aws:autoscaling:launchconfiguration"
                                                            {"InstanceType" "t2.micro"}}}]}}}}
 
-  :repl-options {:init-ns conj2019.full_demo.system}
+  :repl-options {:init-ns conj2019.heroes.core}
 
   :aliases {"deploy-ebs-tomcat" ["do"
                                  ["clean"]
