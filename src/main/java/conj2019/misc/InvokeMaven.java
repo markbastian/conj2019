@@ -1,4 +1,4 @@
-package conj2019.maven;
+package conj2019.misc;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -9,7 +9,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-public class Application {
+public class InvokeMaven {
     public static void main(String[] args) throws IOException, URISyntaxException {
         URIBuilder builder = new URIBuilder("http://search.maven.org/solrsearch/select");
         builder.setParameter("q", "g:org.clojure a:clojure");

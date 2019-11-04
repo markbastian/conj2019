@@ -1,4 +1,4 @@
-package conj2019.programming_quotes_api;
+package conj2019.misc;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -7,7 +7,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
 
-public class AllQuotes {
+public class InvokeProgrammingQuotesAPI {
     public static void main(String[] args) throws IOException {
         final HttpUriRequest request = new HttpGet("https://programming-quotes-api.herokuapp.com/quotes");
         HttpResponse response = HttpClientBuilder.create().build().execute(request);
