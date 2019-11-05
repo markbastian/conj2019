@@ -149,7 +149,7 @@
 
   (let [{:keys [::datascript/connection]} (system sys)
         db @connection]
-    (weapons db ["Mark" "War" "Complexity"]))
+    (w/weapons db ["Mark" "War" "Complexity"]))
 
   ;Test route matching
   ;Has *NO* knowledge of function implementation, handler, etc.
