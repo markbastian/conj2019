@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
@@ -12,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,20 +67,21 @@ public class Visibility {
         final HttpUriRequest request = new HttpGet("http://localhost:3000/weapons");
         HttpResponse response = HttpClientBuilder.create().build().execute(request);
         InputStream content = response.getEntity().getContent();
-        Reader reader = new InputStreamReader(content, "UTF-8");
+        Reader reader = new InputStreamReader(content, StandardCharsets.UTF_8);
         //Map<String, Collection<String>> result = new Gson().fromJson(reader, AreYouKiddingMe.class);
-        Map<String, Collection<String>> result = new Gson().fromJson(reader, HashMap.class);
+        Map result = new Gson().fromJson(reader, HashMap.class);
         System.out.println(result);
         System.out.println(result.keySet());
     }
 
-    public static void try6() throws IOException {
-        final HttpUriRequest request = new HttpGet("http://localhost:3000/weapons?name=War");
+    public static void try6() throws IOException, URISyntaxException {
+        URIBuilder builder = new URIBuilder("http://localhost:3000/weapons")
+                .addParameter("name", "War");
+        final HttpUriRequest request = new HttpGet(builder.build());
         HttpResponse response = HttpClientBuilder.create().build().execute(request);
         InputStream content = response.getEntity().getContent();
-        Reader reader = new InputStreamReader(content, "UTF-8");
-        //Map<String, Collection<String>> result = new Gson().fromJson(reader, AreYouKiddingMe.class);
-        Map<String, Collection<String>> result = new Gson().fromJson(reader, HashMap.class);
+        Reader reader = new InputStreamReader(content, StandardCharsets.UTF_8);
+        Map result = new Gson().fromJson(reader, HashMap.class);
         System.out.println(result);
         System.out.println(result.keySet());
     }

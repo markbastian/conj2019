@@ -124,6 +124,8 @@
                             :conn     (ig/ref ::datascript/connection)
                             :handler  #'handler}})
 
+(ig/init config)
+
 (defonce sys (create config))
 
 (comment
@@ -198,11 +200,20 @@
                  :query-params {:name "Mark"}}]
     (get (client/request request) :body))
 
+  (let [request {:method       :get
+                 :as           :json
+                 :url          "http://localhost:3000/weapons"
+                 :query-params {:name "Famine"}}]
+    (->> (client/request request)
+         :body
+         println))
+
+(require '[clj-http.client :as client])
+
 (let [request {:method       :get
-               :as           :json
+               :as           :json-string-keys
                :url          "http://localhost:3000/weapons"
-               :query-params {:name "Famine"}}]
-  (->> (client/request request)
-       :body
-       println))
+               :query-params {:name "Famine"}}
+      response (:body (client/request request))]
+  (println response))
   )

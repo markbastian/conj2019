@@ -2,10 +2,13 @@ package conj2019.horsemen.app.v5;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class WebApiController {
@@ -14,19 +17,6 @@ public class WebApiController {
 
     @Autowired
     HorsemanRepository horsemanRepository;
-
-//    500 :(
-    @RequestMapping("/files_v0")
-    public Iterable<FileEntry> files_v0() {
-        return fileEntryRepository.findAll();
-    }
-
-    @RequestMapping("/files_v1")
-    public String files_v1() {
-        //Problem? - toString on FileEntry or something else?
-        //[hello2.FileEntry@7817c48c]
-        return fileEntryRepository.findAll().toString();
-    }
 
     @RequestMapping("/files")
     public Collection<FileEntry> files() {
@@ -44,5 +34,15 @@ public class WebApiController {
             entries.add(entry);
         }
         return entries;
+    }
+
+    @RequestMapping("/weapons")
+    public Map<String, String[]> weapons(@RequestParam(value="name") String name) {
+        Map<String, String[]> res = new HashMap<>();
+        for(Horseman horseman : horsemanRepository.findByName(name)){
+            res.put(name, horseman.getWeapons());
+            return res;
+        }
+        return res;
     }
 }
