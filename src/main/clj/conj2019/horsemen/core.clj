@@ -124,8 +124,6 @@
                             :conn     (ig/ref ::datascript/connection)
                             :handler  #'handler}})
 
-(ig/init config)
-
 (defonce sys (create config))
 
 (comment
