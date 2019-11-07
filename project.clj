@@ -31,7 +31,9 @@
                  [org.clojure/java.jdbc "0.7.10"]
                  ;For spring
                  [org.springframework.boot/spring-boot-starter-web "2.1.9.RELEASE"]
-                 [org.springframework.boot/spring-boot-starter-data-jpa "2.1.9.RELEASE"]]
+                 [org.springframework.boot/spring-boot-starter-data-jpa "2.1.9.RELEASE"]
+                 ;jetbrains Contract annotation
+                 [org.jetbrains/annotations "16.0.1"]]
 
   :main conj2019.full_demo.core
 
