@@ -35,6 +35,8 @@
 
   :main conj2019.full_demo.core
 
+  :min-lein-version "2.9.1"
+
   :plugins [[lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]
             [lein-uberwar "0.2.1"]
             [lein-beanstalk "0.2.7"]
