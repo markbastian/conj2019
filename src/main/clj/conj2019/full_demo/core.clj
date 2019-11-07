@@ -4,7 +4,8 @@
             [partsbin.core :as partsbin]
             [taoensso.timbre :as timbre]
             [nrepl.server :refer [start-server stop-server]]
-            [conj2019.full_demo.system :refer [sys config]]))
+            [conj2019.full_demo.system :refer [sys config]]
+            [partsbin.immutant.web.core :as web]))
 
 (defn -main [& [port]]
   (let [nrepl-port (some->> :nrepl-port env (re-matches #"\d+") Long/parseLong)
