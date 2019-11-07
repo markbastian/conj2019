@@ -3,6 +3,8 @@ package conj2019.horsemen.app.v0;
 import org.jetbrains.annotations.Contract;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public class Horseman {
@@ -35,5 +37,15 @@ public class Horseman {
                 "name='" + name + '\'' +
                 ", weapons=" + weapons +
                 '}';
+    }
+
+    public static void main(String[] args) {
+        List<Horseman> horsemen =
+                List.of(new Horseman("Famine", List.of("Scales")),
+                        new Horseman("Pestilence", List.of("Bow", "Arrow")),
+                        new Horseman("War", List.of("Sword")),
+                        new Horseman("Death", Collections.emptyList()));
+
+        System.out.println(horsemen);
     }
 }
