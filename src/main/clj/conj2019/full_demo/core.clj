@@ -8,7 +8,7 @@
             [partsbin.immutant.web.core :as web]))
 
 (defn -main [& [port]]
-  (let [nrepl-port (some->> :nrepl-port env (re-matches #"\d+") Long/parseLong)
+  (let [nrepl-port (or (some->> :nrepl-port env (re-matches #"\d+") Long/parseLong) 3001)
         nrepl-host (env :nrepl-host "0.0.0.0")
         port-actual (or port (env :port) (get-in config [::web/server :port]))
         port-actual (cond-> port-actual (string? port-actual) (Integer/parseInt))
