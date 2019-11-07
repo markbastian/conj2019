@@ -53,26 +53,33 @@
   :cljsbuild {:builds [{:id           "dev"
                         :source-paths ["src/main/cljs" "src/main/cljc"]}]}
 
-  :profiles {:cljs       {:dependencies [[org.clojure/clojurescript "1.10.520"]
-                                         [reagent "0.9.0-rc1"]
-                                         [haslett "0.1.6"]
-                                         [cljs-ajax "0.8.0"]]}
-             :uberjar    {:aot :all}
-             :ebs-docker {:zip ["Dockerfile" "target/conj2019-0.1.0-SNAPSHOT-standalone.jar"]
-                          :aws {:beanstalk
-                                {:region       "us-east-1"
-                                 :stack-name   "64bit Amazon Linux 2018.03 v2.13.0 running Docker 18.06.1-ce"
-                                 :s3-bucket    "conj2019"
-                                 :environments [{:name    "development"
-                                                 :options {"aws:autoscaling:asg"
-                                                           {"MinSize" "1" "MaxSize" "1"}
-                                                           "aws:autoscaling:launchconfiguration"
-                                                           {"InstanceType" "t2.micro"}}}]}}}}
+  :profiles {:cljs     {:dependencies [[org.clojure/clojurescript "1.10.520"]
+                                       [reagent "0.9.0-rc1"]
+                                       [haslett "0.1.6"]
+                                       [cljs-ajax "0.8.0"]]}
+             :uberjar  {:aot :all}
+             :ebs-java {:zip ["target/conj2019-0.1.0-SNAPSHOT-standalone.jar"]
+                        :aws {:beanstalk
+                              {:region       "us-east-1"
+                               :stack-name   "64bit Amazon Linux 2018.03 v2.10.0 running Java 8"
+                               :s3-bucket    "conj2019"
+                               :environments [{:name    "conj2019"
+                                               :options {"aws:autoscaling:asg"
+                                                         {"MinSize" "1" "MaxSize" "1"}
+                                                         "aws:autoscaling:launchconfiguration"
+                                                         {"InstanceType" "t2.micro"}}}]}}}}
 
   :repl-options {:init-ns conj2019.full_demo.system}
 
-  :aliases {"deploy-ebs-docker" ["do"
-                                 ["clean"]
-                                 ["uberjar"]
-                                 ["with-profile" "+ebs-docker" "zip"]
-                                 ["with-profile" "+ebs-docker" "dockerstalk" "deploy" "development" "target/conj2019-0.1.0-SNAPSHOT.zip"]]})
+  :aliases {"deploy-ebs-java" ["do"
+                               ["clean"]
+                               ["uberjar"]
+                               ["with-profile"
+                                "+ebs-java"
+                                "zip"]
+                               ["with-profile"
+                                "+ebs-java"
+                                "dockerstalk"
+                                "deploy"
+                                "conj2019"
+                                "target/conj2019-0.1.0-SNAPSHOT.zip"]]})
