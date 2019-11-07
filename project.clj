@@ -62,8 +62,8 @@
                         :aws {:beanstalk
                               {:region       "us-east-1"
                                :stack-name   "64bit Amazon Linux 2018.03 v2.10.0 running Java 8"
-                               ;:s3-bucket    "clj-cloud-playground"
-                               :environments [{:name    "development"
+                               :s3-bucket    "conj2019"
+                               :environments [{:name    "conj2019"
                                                :options {"aws:autoscaling:asg"
                                                          {"MinSize" "1" "MaxSize" "1"}
                                                          "aws:autoscaling:launchconfiguration"
@@ -81,5 +81,5 @@
                                 "+ebs-java"
                                 "dockerstalk"
                                 "deploy"
-                                "development"
+                                "conj2019"
                                 "target/conj2019-0.1.0-SNAPSHOT.zip"]]})
