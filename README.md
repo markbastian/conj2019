@@ -12,6 +12,9 @@ A Clojure library designed to ... well, that part is up to you.
   * https://spring.io/guides/gs/accessing-data-jpa/
   * 
 
+## Crib Sheet
+* 
+
 ## Data
 sls deploy -v
 1. Non-stripped down project (upload mid 40MB) 3:13
