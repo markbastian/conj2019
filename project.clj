@@ -50,8 +50,6 @@
   :resource-paths ["src/main/resources"]
   :java-source-paths ["src/main/java"]
 
-  :javac-options ["-target" "1.8" "-source" "1.8" "-Xlint:-options"]
-
   :cljsbuild {:builds [{:id           "dev"
                         :source-paths ["src/main/cljs" "src/main/cljc"]}]}
 
