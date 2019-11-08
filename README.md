@@ -13,7 +13,12 @@ A Clojure library designed to ... well, that part is up to you.
   * 
 
 ## Crib Sheet
-* 
+* Heroku
+   * git push heroku master
+   * heroku ps:scale web=1 (make sure you have 1 dyno)
+   * heroku ps:scale web=0 (shut it all down)
+   * heroku logs --tail
+   * heroku ps:forward 3001
 
 ## Data
 sls deploy -v
@@ -22,6 +27,9 @@ sls deploy -v
 
 sls deploy function -f EchoHandler
 1. 0:33
+
+git push heroku master
+~1:30
 
 ## License
 
