@@ -19,6 +19,10 @@ A Clojure library designed to ... well, that part is up to you.
    * heroku ps:scale web=0 (shut it all down)
    * heroku logs --tail
    * heroku ps:forward 3001
+   
+* EBS
+   * lein deploy-ebs-java
+   * lein with-profile +ebs-java beanstalk terminate conj2019
 
 ## Data
 sls deploy -v

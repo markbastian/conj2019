@@ -16,13 +16,15 @@
 (defn hello-world-handler [request]
   (ok
     (html5
-      [:div
-       [:h1 "Welcome to my simple conj demo"]
-       [:img {:src "/qr" :alt "qr"}]
-       [:ul
-        [:li [:a {:href "/v0"} "Visit the basic static api"]]
-        [:li [:a {:href "/eliza"} "Visit Eliza, a low-tech psychiatrist"]]
-        [:li [:a {:href "/horsemen"} "Defeat the 4 horsemen!"]]]])))
+      [:body #_{:style "background-image:url(/public/Clojure_logo.png);background-repeat: no-repeat;background-size: 100%;"}
+       [:div
+        ;[:h1 "Welcome to Clojure/conj!"]
+        [:h1 "Welcome to my simple conj demo"]
+        [:img {:src "/qr" :alt "qr"}]
+        [:ul
+         [:li [:a {:href "/v0"} "Visit the basic static api"]]
+         [:li [:a {:href "/eliza"} "Visit Eliza, a low-tech psychiatrist"]]
+         [:li [:a {:href "/horsemen"} "Defeat the 4 horsemen!"]]]]])))
 
 (def handler
   (ring/ring-handler
