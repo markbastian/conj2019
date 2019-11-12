@@ -186,11 +186,29 @@
         weapons-query-handler
         :body))
 
+  ;Build a new handler by applying middlewares to understand the full chain
+  ;Note differences when different middlewares are removed
+  (let [conn (doto (d/create-conn w/schema)
+               (d/transact! w/sample-data))
+        handler (-> weapons-query-handler
+                    middleware/wrap-format
+                    params/wrap-params
+                    )]
+    (-> (mock/request :get "/weapons?name=Complexity")
+        (assoc :conn conn)
+        handler
+        :body
+        slurp
+        (ch/parse-string true)))
+
   ;Business logic/API - Create sample db
   (let [db (d/db-with
              (d/empty-db w/schema)
              w/sample-data)]
-    (w/weapons db ["Mark" "Opacity"]))
+    (w/weapons db ["Complexity"
+                   "Opacity"
+                   "Distance"
+                   "Unfamiliarity"]))
 
   ;;Finally, I can test against the entire system
   (let [request {:method :get
