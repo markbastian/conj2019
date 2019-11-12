@@ -16,6 +16,7 @@ A Clojure library designed to ... well, that part is up to you.
 * Heroku
    * git push heroku master
    * heroku ps:scale web=1 (make sure you have 1 dyno)
+   * heroku open (https://fierce-eyrie-72312.herokuapp.com)
    * heroku ps:scale web=0 (shut it all down)
    * heroku logs --tail
    * heroku ps:forward 3001
