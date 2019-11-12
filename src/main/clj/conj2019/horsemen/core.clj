@@ -24,7 +24,8 @@
             [conj2019.horsemen.weapons-api :as w]
             [conj2019.horsemen.files-api :as f]
             [cheshire.core :as ch]
-            [clj-http.client :as client])
+            [clj-http.client :as client]
+            [clojure.edn :as edn])
   (:import (java.io File)
            (java.util Date)))
 
@@ -154,7 +155,7 @@
   (r/match-by-path router "/weapons")
   (r/match-by-path router "/weapon")
 
-  ;Test handlers independently
+  ;Test global handler
   (handler (mock/request :get "/echo"))
 
   ;Even test a handler that requires a component
@@ -167,6 +168,7 @@
         slurp
         (ch/parse-string true)))
 
+  ;Global handler with query params
   (let [conn (doto (d/create-conn w/schema)
                (d/transact! w/sample-data))]
     (-> (mock/request :get "/weapons?name=Complexity")
@@ -175,6 +177,20 @@
         :body
         slurp
         (ch/parse-string true)))
+
+  ;Mock a specific handler (not the global)
+  (let [conn (doto (d/create-conn w/schema)
+               (d/transact! w/sample-data))]
+    (-> (mock/request :get "/weapons")
+        (assoc :conn conn)
+        weapons-query-handler
+        :body))
+
+  ;Business logic/API - Create sample db
+  (let [db (d/db-with
+             (d/empty-db w/schema)
+             w/sample-data)]
+    (w/weapons db ["Mark" "Opacity"]))
 
   ;;Finally, I can test against the entire system
   (let [request {:method :get
@@ -206,12 +222,12 @@
          :body
          println))
 
-(require '[clj-http.client :as client])
+  (require '[clj-http.client :as client])
 
-(let [request {:method       :get
-               :as           :json-string-keys
-               :url          "http://localhost:3000/weapons"
-               :query-params {:name "Famine"}}
-      response (:body (client/request request))]
-  (println response))
+  (let [request {:method       :get
+                 :as           :json-string-keys
+                 :url          "http://localhost:3000/weapons"
+                 :query-params {:name "Famine"}}
+        response (:body (client/request request))]
+    (println response))
   )
