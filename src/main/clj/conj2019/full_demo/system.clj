@@ -16,7 +16,7 @@
 (defn hello-world-handler [request]
   (ok
     (html5
-      [:body                                                ;{:style "background-image:url(/public/Clojure_logo.png);background-repeat: no-repeat;background-size: 100%;"}
+      [:body #_{:style "background-image:url(/public/Clojure_logo.png);background-repeat: no-repeat;background-size: 100%;"}
        [:div
         ;[:h1 "Welcome to Clojure/conj!"]
         [:h1 "Welcome to my simple conj demo"]

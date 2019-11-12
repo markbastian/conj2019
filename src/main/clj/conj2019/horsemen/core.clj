@@ -134,7 +134,7 @@
   (let [{:keys [::datascript/connection]} (system sys)]
     connection)
 
-  ;;Develop queries agains the live system
+  ;;Develop queries against the live system
   (let [{:keys [::datascript/connection]} (system sys)
         db @connection]
     (d/q
