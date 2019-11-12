@@ -5,7 +5,7 @@
   (j/create-table-ddl
     :files
     [[:name "varchar"]
-     [:processed :time]]))
+     [:processed :timestamp]]))
 
 (defn setup [conn]
   (j/db-do-commands

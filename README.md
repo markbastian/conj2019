@@ -23,6 +23,8 @@ A Clojure library designed to ... well, that part is up to you.
    
 * EBS
    * lein deploy-ebs-java
+   * eb ssh (follow directions)
+   * eb ssh --custom 'ssh -i ~/.ssh/mykey.pem -L 3001:localhost:3001'
    * lein with-profile +ebs-java beanstalk terminate conj2019
 
 ## Data
