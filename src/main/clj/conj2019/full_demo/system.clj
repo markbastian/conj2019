@@ -20,11 +20,12 @@
        [:div
         ;[:h1 "Welcome to Clojure/conj!"]
         [:h1 "Welcome to my simple conj demo"]
-        [:img {:src "/qr" :alt "qr"}]
+        ;[:img {:src "/qr" :alt "qr"}]
         [:ul
          [:li [:a {:href "/v0"} "Visit the basic static api"]]
-         [:li [:a {:href "/eliza"} "Visit Eliza, a low-tech psychiatrist"]]
-         [:li [:a {:href "/horsemen"} "Defeat the 4 horsemen!"]]]]])))
+         ;[:li [:a {:href "/eliza"} "Visit Eliza, a low-tech psychiatrist"]]
+         ;[:li [:a {:href "/horsemen"} "Defeat the 4 horsemen!"]]
+         ]]])))
 
 (def handler
   (ring/ring-handler
@@ -33,7 +34,7 @@
        v0/routes
        eliza/routes
        horsemen/routes
-       ["/qr" (fn [_] (ok (qr/as-input-stream (qr/from "http://localhost:3000"))))]
+       ["/qr" (fn [_] (ok (qr/as-input-stream (qr/from "http://conj2019-conj2019.us-east-1.elasticbeanstalk.com/"))))]
        ["/public/*" (ring/create-resource-handler)]
        (let [nrepl-handler (drawbridge.core/ring-handler)]
          ["/repl" {:handler nrepl-handler}])]
