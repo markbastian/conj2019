@@ -2,6 +2,8 @@
 
 Material presented at my 2019 Clojure/conj talk, "Defeating the Horsemen of the Coding Apocalypse."
 
+The recorded talk can be found [here](https://youtu.be/jh4hMAvygjk) and slides can be found [here](./slides/index.html).
+
 ## Actual Code Used/Demoed
 The "simple system" demo is located in src/main/clj/conj2019/horsemen/core.clj. It can be launched by switching to that ns and invoking `(start sys)`.
 
