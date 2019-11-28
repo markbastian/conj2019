@@ -1,16 +1,15 @@
 # conj2019
 
-A Clojure library designed to ... well, that part is up to you.
+Material presented at my 2019 Clojure/conj talk, "Defeating the Horsemen of the Coding Apocalypse."
 
-## Links
+The recorded talk can be found [here](https://youtu.be/jh4hMAvygjk) and slides can be found [here](./slides/index.html).
 
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/) using Spring.
-* [The State of Java in 2019](https://www.baeldung.com/java-in-2019)
-  * Spring 5 > 50%
-  * Spring Boot > 60%
-* For Spring
-  * https://spring.io/guides/gs/accessing-data-jpa/
-  * 
+## Actual Code Used/Demoed
+The "simple system" demo is located in src/main/clj/conj2019/horsemen/core.clj. It can be launched by switching to that ns and invoking `(start sys)`.
+
+The "EBS/Remote REPL" demo is located in src/main/clj/conj2019/full_demo/system.clj. It can launched by switching to that ns and invoking `(partsbin/start sys)`. The main class used when packaging and deploying to EBS is located at src/main/clj/conj2019/full_demo/core.clj.
+
+There are a handful of other files in the project that didn't make it into the demo. Feel free to poke around. src/main/java/conj2019/horsemen/app/v5 contains a Spring Boot version of the simple system app for comparison, but there wasn't time to discuss it in the talk.
 
 ## Crib Sheet
 * Heroku
@@ -41,9 +40,20 @@ sls deploy function -f EchoHandler
 git push heroku master
 ~1:30
 
+## Random Links
+Mostly for my own reference.
+
+* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/) using Spring.
+* [The State of Java in 2019](https://www.baeldung.com/java-in-2019)
+  * Spring 5 > 50%
+  * Spring Boot > 60%
+* For Spring
+  * https://spring.io/guides/gs/accessing-data-jpa/
+  * 
+  
 ## License
 
-Copyright © 2019 FIXME
+Copyright © 2019 Mark Bastian
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at

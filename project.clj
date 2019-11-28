@@ -3,6 +3,10 @@
   :url "http://example.com/FIXME"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
             :url  "https://www.eclipse.org/legal/epl-2.0/"}
+
+  :exclusions [com.fasterxml.jackson.core/jackson-core
+               org.clojure/tools.reader]
+
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [markbastian/partsbin "0.1.3-SNAPSHOT"]
                  [com.taoensso/timbre "4.10.0"]
@@ -20,7 +24,7 @@
                  [nrepl "0.6.0"]
                  [nrepl/drawbridge "0.2.1"]
                  [metosin/reitit "0.3.10"]
-                 [datascript "0.18.6"]
+                 [datascript "0.18.7"]
                  [cheshire "5.9.0"]
                  [clj.qrgen "0.4.0"]
                  ;Mazes!
@@ -30,10 +34,14 @@
                  [factual/durable-queue "0.1.6"]
                  [org.clojure/java.jdbc "0.7.10"]
                  ;For spring
-                 [org.springframework.boot/spring-boot-starter-web "2.1.9.RELEASE"]
-                 [org.springframework.boot/spring-boot-starter-data-jpa "2.1.9.RELEASE"]
+                 [org.springframework.boot/spring-boot-starter-web "2.2.1.RELEASE"]
+                 [org.springframework.boot/spring-boot-starter-data-jpa "2.2.1.RELEASE"]
                  ;jetbrains Contract annotation
-                 [org.jetbrains/annotations "16.0.1"]]
+                 [org.jetbrains/annotations "18.0.0"]
+                 ;
+                 [org.clojure/tools.reader "1.3.2"]
+                 [com.fasterxml.jackson.core/jackson-core "2.10.1"]
+                 ]
 
   :main conj2019.full_demo.core
 

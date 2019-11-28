@@ -36,8 +36,8 @@
        horsemen/routes
        ["/qr" (fn [_] (ok (qr/as-input-stream (qr/from "http://conj2019-conj2019.us-east-1.elasticbeanstalk.com/"))))]
        ["/public/*" (ring/create-resource-handler)]
-       (let [nrepl-handler (drawbridge.core/ring-handler)]
-         ["/repl" {:handler nrepl-handler}])]
+       #_(let [nrepl-handler (drawbridge.core/ring-handler)]
+           ["/repl" {:handler nrepl-handler}])]
       {:data {:middleware [[wrap-defaults
                             (-> site-defaults
                                 (update :security dissoc :anti-forgery)
