@@ -28,6 +28,7 @@ A Clojure library designed to ... well, that part is up to you.
    * eb ssh --custom 'ssh -i ~/.ssh/mykey.pem -L 3001:localhost:3001'
    * http://conj2019-conj2019.us-east-1.elasticbeanstalk.com/
    * lein with-profile +ebs-java beanstalk terminate conj2019
+   * 'eb scale 0 conj2019' is an easy way to shut everything down without deleting the project
 
 ## Data
 sls deploy -v
